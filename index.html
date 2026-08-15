@@ -1,18 +1,13 @@
+
 <!DOCTYPE html>
 <html lang="ar" dir="rtl">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>DELIVR — خدمات رقمية</title>
-
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600;700&family=Tajawal:wght@400;500;700;900&display=swap" rel="stylesheet">
-
-<!-- Moyasar -->
-<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/moyasar-payment-form@2.2.10/dist/moyasar.css">
-<script src="https://cdn.jsdelivr.net/npm/moyasar-payment-form@2.2.10/dist/moyasar.umd.min.js"></script>
-
 <style>
   :root{
     --bg:#121417;
@@ -24,928 +19,244 @@
     --accent:#3DDC97;
     --accent-dim:#173328;
     --danger:#E0596B;
-    --mono:'IBM Plex Mono',monospace;
-    --sans:'Tajawal',sans-serif;
+    --mono: 'IBM Plex Mono', monospace;
+    --sans: 'Tajawal', sans-serif;
   }
-
   *{box-sizing:border-box;}
-
-  html,body{
-    margin:0;
-    padding:0;
-    background:var(--bg);
-    color:var(--text);
-    font-family:var(--sans);
-  }
-
+  html,body{margin:0;padding:0;background:var(--bg);color:var(--text);font-family:var(--sans);}
   body{-webkit-font-smoothing:antialiased;}
-
-  a{
-    color:inherit;
-    text-decoration:none;
-  }
-
-  button{
-    font-family:inherit;
-    cursor:pointer;
-  }
+  a{color:inherit;text-decoration:none;}
+  button{font-family:inherit;cursor:pointer;}
 
   header.topbar{
-    position:sticky;
-    top:0;
-    z-index:40;
-    background:rgba(18,20,23,.92);
-    backdrop-filter:blur(10px);
+    position:sticky;top:0;z-index:40;
+    background:rgba(18,20,23,0.92);backdrop-filter:blur(10px);
     border-bottom:1px solid var(--line);
   }
-
   .topbar-inner{
-    max-width:1180px;
-    margin:0 auto;
-    padding:14px 20px;
-    display:flex;
-    align-items:center;
-    justify-content:space-between;
+    max-width:1180px;margin:0 auto;padding:14px 20px;
+    display:flex;align-items:center;justify-content:space-between;
   }
-
-  .logo{
-    font-family:var(--mono);
-    font-weight:700;
-    font-size:19px;
-    letter-spacing:2px;
-    display:flex;
-    align-items:center;
-    gap:8px;
-  }
-
-  .logo .dot{
-    width:8px;
-    height:8px;
-    background:var(--accent);
-    border-radius:50%;
-    display:inline-block;
-  }
-
+  .logo{font-family:var(--mono);font-weight:700;font-size:19px;letter-spacing:2px;display:flex;align-items:center;gap:8px;}
+  .logo .dot{width:8px;height:8px;background:var(--accent);border-radius:50%;display:inline-block;}
   .cart-btn{
-    display:flex;
-    align-items:center;
-    gap:8px;
-    background:var(--surface);
-    border:1px solid var(--line);
-    border-radius:999px;
-    padding:8px 16px;
-    font-family:var(--mono);
-    font-size:13px;
-    color:var(--text);
+    display:flex;align-items:center;gap:8px;background:var(--surface);
+    border:1px solid var(--line);border-radius:999px;padding:8px 16px;
+    font-family:var(--mono);font-size:13px;color:var(--text);
   }
-
-  .cart-btn:hover{
-    border-color:var(--accent);
-  }
-
-  .cart-count{
-    background:var(--accent);
-    color:#121417;
-    border-radius:999px;
-    font-weight:700;
-    padding:1px 7px;
-    font-size:12px;
-  }
+  .cart-btn:hover{border-color:var(--accent);}
+  .cart-count{background:var(--accent);color:#121417;border-radius:999px;font-weight:700;padding:1px 7px;font-size:12px;}
 
   .hero{
-    max-width:1180px;
-    margin:0 auto;
-    padding:70px 20px 50px;
-    display:grid;
-    grid-template-columns:1.1fr .9fr;
-    gap:40px;
-    align-items:center;
+    max-width:1180px;margin:0 auto;padding:70px 20px 50px;
+    display:grid;grid-template-columns:1.1fr 0.9fr;gap:40px;align-items:center;
   }
-
-  .eyebrow{
-    font-family:var(--mono);
-    color:var(--accent);
-    font-size:12px;
-    letter-spacing:3px;
-    margin-bottom:16px;
-    text-transform:uppercase;
-  }
-
-  .hero h1{
-    font-size:42px;
-    line-height:1.15;
-    margin:0 0 18px;
-    font-weight:900;
-  }
-
-  .hero p{
-    color:var(--muted);
-    font-size:16px;
-    line-height:1.7;
-    max-width:460px;
-    margin:0 0 26px;
-  }
-
-  .hero-cta{
-    display:flex;
-    gap:12px;
-  }
-
+  .eyebrow{font-family:var(--mono);color:var(--accent);font-size:12px;letter-spacing:3px;margin-bottom:16px;text-transform:uppercase;}
+  .hero h1{font-size:42px;line-height:1.15;margin:0 0 18px;font-weight:900;}
+  .hero p{color:var(--muted);font-size:16px;line-height:1.7;max-width:460px;margin:0 0 26px;}
+  .hero-cta{display:flex;gap:12px;}
   .btn-primary{
-    background:var(--accent);
-    color:#121417;
-    border:none;
-    border-radius:8px;
-    padding:13px 24px;
-    font-weight:700;
-    font-size:14px;
+    background:var(--accent);color:#121417;border:none;border-radius:8px;
+    padding:13px 24px;font-weight:700;font-size:14px;
   }
-
   .btn-ghost{
-    background:transparent;
-    border:1px solid var(--line);
-    color:var(--text);
-    border-radius:8px;
-    padding:13px 24px;
-    font-weight:700;
-    font-size:14px;
+    background:transparent;border:1px solid var(--line);color:var(--text);
+    border-radius:8px;padding:13px 24px;font-weight:700;font-size:14px;
   }
-
-  .btn-ghost:hover{
-    border-color:var(--muted);
-  }
+  .btn-ghost:hover{border-color:var(--muted);}
 
   .spec-panel{
-    background:var(--surface);
-    border:1px solid var(--line);
-    border-radius:14px;
-    padding:22px;
-    font-family:var(--mono);
-    position:relative;
-    overflow:hidden;
+    background:var(--surface);border:1px solid var(--line);border-radius:14px;
+    padding:22px;font-family:var(--mono);position:relative;overflow:hidden;
   }
-
   .spec-panel::before{
-    content:"";
-    position:absolute;
-    inset:0;
-    background:linear-gradient(180deg,transparent,var(--accent-dim) 200%);
-    opacity:.5;
-    pointer-events:none;
+    content:"";position:absolute;inset:0;
+    background:linear-gradient(180deg, transparent, var(--accent-dim) 200%);
+    opacity:.5;pointer-events:none;
   }
-
-  .spec-title{
-    font-size:11px;
-    color:var(--muted);
-    letter-spacing:2px;
-    margin-bottom:14px;
-    display:flex;
-    justify-content:space-between;
-  }
-
+  .spec-title{font-size:11px;color:var(--muted);letter-spacing:2px;margin-bottom:14px;display:flex;justify-content:space-between;}
   .scan-line{
-    position:absolute;
-    left:0;
-    right:0;
-    height:2px;
-    background:linear-gradient(90deg,transparent,var(--accent),transparent);
-    animation:scan 3.5s linear infinite;
-    opacity:.7;
+    position:absolute;left:0;right:0;height:2px;background:linear-gradient(90deg, transparent, var(--accent), transparent);
+    animation:scan 3.5s linear infinite;opacity:.7;
   }
-
-  @keyframes scan{
-    0%{top:0%}
-    100%{top:100%}
-  }
-
-  .spec-row{
-    display:flex;
-    justify-content:space-between;
-    padding:9px 0;
-    border-bottom:1px dashed var(--line);
-    font-size:13px;
-  }
-
-  .spec-row:last-child{
-    border-bottom:none;
-  }
-
-  .spec-row span:first-child{
-    color:var(--muted);
-  }
+  @keyframes scan{0%{top:0%}100%{top:100%}}
+  .spec-row{display:flex;justify-content:space-between;padding:9px 0;border-bottom:1px dashed var(--line);font-size:13px;}
+  .spec-row:last-child{border-bottom:none;}
+  .spec-row span:first-child{color:var(--muted);}
 
   .filters{
-    max-width:1180px;
-    margin:0 auto;
-    padding:0 20px 24px;
-    display:flex;
-    gap:10px;
-    flex-wrap:wrap;
+    max-width:1180px;margin:0 auto;padding:0 20px 24px;
+    display:flex;gap:10px;flex-wrap:wrap;
   }
-
   .chip{
-    font-family:var(--mono);
-    font-size:12px;
-    padding:8px 16px;
-    border-radius:999px;
-    border:1px solid var(--line);
-    background:var(--surface);
-    color:var(--muted);
+    font-family:var(--mono);font-size:12px;padding:8px 16px;border-radius:999px;
+    border:1px solid var(--line);background:var(--surface);color:var(--muted);
   }
-
-  .chip.active{
-    border-color:var(--accent);
-    color:var(--accent);
-    background:var(--accent-dim);
-  }
+  .chip.active{border-color:var(--accent);color:var(--accent);background:var(--accent-dim);}
 
   .grid{
-    max-width:1180px;
-    margin:0 auto;
-    padding:0 20px 80px;
-    display:grid;
-    grid-template-columns:repeat(3,1fr);
-    gap:18px;
+    max-width:1180px;margin:0 auto;padding:0 20px 80px;
+    display:grid;grid-template-columns:repeat(3,1fr);gap:18px;
   }
-
   .card{
-    background:var(--surface);
-    border:1px solid var(--line);
-    border-radius:12px;
-    overflow:hidden;
-    display:flex;
-    flex-direction:column;
-    transition:border-color .2s;
+    background:var(--surface);border:1px solid var(--line);border-radius:12px;
+    overflow:hidden;display:flex;flex-direction:column;transition:border-color .2s;
     cursor:pointer;
   }
-
-  .card:hover{
-    border-color:var(--accent);
-  }
-
+  .card:hover{border-color:var(--accent);}
   .card-media{
-    height:120px;
-    background:var(--surface-2);
-    position:relative;
-    display:flex;
-    align-items:center;
-    justify-content:center;
-    font-size:36px;
+    height:120px;background:var(--surface-2);position:relative;
+    display:flex;align-items:center;justify-content:center;font-size:36px;
   }
-
   .ref-tag{
-    position:absolute;
-    top:10px;
-    right:10px;
-    font-family:var(--mono);
-    font-size:10px;
-    color:var(--muted);
-    background:rgba(18,20,23,.7);
-    padding:3px 7px;
-    border-radius:4px;
+    position:absolute;top:10px;right:10px;font-family:var(--mono);font-size:10px;
+    color:var(--muted);background:rgba(18,20,23,.7);padding:3px 7px;border-radius:4px;
   }
-
   .delivery-tag{
-    position:absolute;
-    bottom:10px;
-    left:10px;
-    font-family:var(--mono);
-    font-size:9.5px;
-    color:var(--accent);
-    background:rgba(18,20,23,.7);
-    padding:3px 7px;
-    border-radius:4px;
+    position:absolute;bottom:10px;left:10px;font-family:var(--mono);font-size:9.5px;
+    color:var(--accent);background:rgba(18,20,23,.7);padding:3px 7px;border-radius:4px;
     letter-spacing:.5px;
   }
-
-  .card-body{
-    padding:14px 16px 16px;
-    display:flex;
-    flex-direction:column;
-    gap:6px;
-    flex:1;
-  }
-
-  .card-cat{
-    font-family:var(--mono);
-    font-size:10px;
-    color:var(--accent);
-    letter-spacing:1.5px;
-  }
-
-  .card-name{
-    font-weight:700;
-    font-size:15px;
-  }
-
-  .card-desc{
-    color:var(--muted);
-    font-size:12.5px;
-    line-height:1.5;
-    flex:1;
-  }
-
-  .card-meta{
-    font-family:var(--mono);
-    font-size:11px;
-    color:var(--muted);
-    margin-top:2px;
-  }
-
-  .card-foot{
-    display:flex;
-    align-items:center;
-    justify-content:space-between;
-    margin-top:8px;
-  }
-
-  .price{
-    font-family:var(--mono);
-    font-weight:600;
-    font-size:16px;
-  }
-
+  .card-body{padding:14px 16px 16px;display:flex;flex-direction:column;gap:6px;flex:1;}
+  .card-cat{font-family:var(--mono);font-size:10px;color:var(--accent);letter-spacing:1.5px;}
+  .card-name{font-weight:700;font-size:15px;}
+  .card-desc{color:var(--muted);font-size:12.5px;line-height:1.5;flex:1;}
+  .card-meta{font-family:var(--mono);font-size:11px;color:var(--muted);margin-top:2px;}
+  .card-foot{display:flex;align-items:center;justify-content:space-between;margin-top:8px;}
+  .price{font-family:var(--mono);font-weight:600;font-size:16px;}
   .add-btn{
-    background:var(--surface-2);
-    border:1px solid var(--line);
-    color:var(--text);
-    border-radius:7px;
-    padding:8px 14px;
-    font-size:12px;
-    font-weight:700;
-    font-family:var(--mono);
+    background:var(--surface-2);border:1px solid var(--line);color:var(--text);
+    border-radius:7px;padding:8px 14px;font-size:12px;font-weight:700;font-family:var(--mono);
   }
-
-  .add-btn:hover{
-    border-color:var(--accent);
-    color:var(--accent);
-  }
+  .add-btn:hover{border-color:var(--accent);color:var(--accent);}
 
   .overlay{
-    position:fixed;
-    inset:0;
-    background:rgba(0,0,0,.5);
-    opacity:0;
-    pointer-events:none;
-    transition:opacity .25s;
-    z-index:50;
+    position:fixed;inset:0;background:rgba(0,0,0,.5);opacity:0;pointer-events:none;
+    transition:opacity .25s;z-index:50;
   }
-
-  .overlay.show{
-    opacity:1;
-    pointer-events:auto;
-  }
-
+  .overlay.show{opacity:1;pointer-events:auto;}
   .drawer{
-    position:fixed;
-    top:0;
-    left:0;
-    height:100%;
-    width:380px;
-    max-width:90vw;
-    background:var(--bg);
-    border-left:1px solid var(--line);
-    z-index:60;
-    transform:translateX(-100%);
-    transition:transform .3s ease;
-    display:flex;
-    flex-direction:column;
+    position:fixed;top:0;left:0;height:100%;width:380px;max-width:90vw;
+    background:var(--bg);border-left:1px solid var(--line);z-index:60;
+    transform:translateX(-100%);transition:transform .3s ease;
+    display:flex;flex-direction:column;
   }
-
-  .drawer.show{
-    transform:translateX(0);
-  }
-
-  .drawer-head{
-    padding:20px;
-    border-bottom:1px solid var(--line);
-    display:flex;
-    justify-content:space-between;
-    align-items:center;
-  }
-
-  .drawer-head h3{
-    margin:0;
-    font-family:var(--mono);
-    font-size:14px;
-    letter-spacing:1px;
-  }
-
-  .close-btn{
-    background:none;
-    border:none;
-    color:var(--muted);
-    font-size:20px;
-  }
-
-  .drawer-items{
-    flex:1;
-    overflow-y:auto;
-    padding:14px 20px;
-  }
-
-  .drawer-empty{
-    color:var(--muted);
-    text-align:center;
-    padding:60px 10px;
-    font-size:13px;
-  }
-
-  .cart-item{
-    display:flex;
-    gap:12px;
-    padding:14px 0;
-    border-bottom:1px solid var(--line);
-  }
-
-  .cart-item-thumb{
-    width:52px;
-    height:52px;
-    background:var(--surface);
-    border-radius:8px;
-    display:flex;
-    align-items:center;
-    justify-content:center;
-    font-size:22px;
-    flex-shrink:0;
-  }
-
-  .cart-item-info{
-    flex:1;
-  }
-
-  .cart-item-name{
-    font-size:13.5px;
-    font-weight:700;
-  }
-
-  .cart-item-price{
-    font-family:var(--mono);
-    color:var(--muted);
-    font-size:12px;
-    margin-top:2px;
-  }
-
-  .cart-item-delivery{
-    font-family:var(--mono);
-    color:var(--accent);
-    font-size:10.5px;
-    margin-top:4px;
-  }
-
-  .cart-item-addons{
-    font-family:var(--mono);
-    color:var(--muted);
-    font-size:10.5px;
-    margin-top:4px;
-    line-height:1.6;
-  }
-
-  .remove-btn{
-    font-family:var(--mono);
-    font-size:11px;
-    color:var(--muted);
-    margin-top:8px;
-    background:none;
-    border:none;
-  }
-
-  .remove-btn:hover{
-    color:var(--danger);
-  }
-
-  .drawer-foot{
-    padding:18px 20px 22px;
-    border-top:1px solid var(--line);
-  }
-
-  .sum-row{
-    display:flex;
-    justify-content:space-between;
-    font-size:13px;
-    color:var(--muted);
-    margin-bottom:6px;
-  }
-
-  .sum-total{
-    display:flex;
-    justify-content:space-between;
-    font-weight:700;
-    font-size:16px;
-    margin:10px 0 16px;
-  }
-
+  .drawer.show{transform:translateX(0);}
+  .drawer-head{padding:20px;border-bottom:1px solid var(--line);display:flex;justify-content:space-between;align-items:center;}
+  .drawer-head h3{margin:0;font-family:var(--mono);font-size:14px;letter-spacing:1px;}
+  .close-btn{background:none;border:none;color:var(--muted);font-size:20px;}
+  .drawer-items{flex:1;overflow-y:auto;padding:14px 20px;}
+  .drawer-empty{color:var(--muted);text-align:center;padding:60px 10px;font-size:13px;}
+  .cart-item{display:flex;gap:12px;padding:14px 0;border-bottom:1px solid var(--line);}
+  .cart-item-thumb{width:52px;height:52px;background:var(--surface);border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:22px;flex-shrink:0;}
+  .cart-item-info{flex:1;}
+  .cart-item-name{font-size:13.5px;font-weight:700;}
+  .cart-item-price{font-family:var(--mono);color:var(--muted);font-size:12px;margin-top:2px;}
+  .cart-item-delivery{font-family:var(--mono);color:var(--accent);font-size:10.5px;margin-top:4px;}
+  .cart-item-addons{font-family:var(--mono);color:var(--muted);font-size:10.5px;margin-top:4px;line-height:1.6;}
+  .remove-btn{font-family:var(--mono);font-size:11px;color:var(--muted);margin-top:8px;background:none;border:none;}
+  .remove-btn:hover{color:var(--danger);}
+  .drawer-foot{padding:18px 20px 22px;border-top:1px solid var(--line);}
+  .sum-row{display:flex;justify-content:space-between;font-size:13px;color:var(--muted);margin-bottom:6px;}
+  .sum-total{display:flex;justify-content:space-between;font-weight:700;font-size:16px;margin:10px 0 16px;}
   .digital-note{
-    display:flex;
-    align-items:center;
-    gap:8px;
-    background:var(--accent-dim);
-    border:1px solid var(--line);
-    border-radius:8px;
-    padding:9px 12px;
-    font-family:var(--mono);
-    font-size:11px;
-    color:var(--accent);
+    display:flex;align-items:center;gap:8px;background:var(--accent-dim);border:1px solid var(--line);
+    border-radius:8px;padding:9px 12px;font-family:var(--mono);font-size:11px;color:var(--accent);
     margin-bottom:14px;
   }
-
   .checkout-btn{
-    width:100%;
-    background:var(--accent);
-    color:#121417;
-    border:none;
-    border-radius:8px;
-    padding:14px;
-    font-weight:700;
-    font-size:14px;
+    width:100%;background:var(--accent);color:#121417;border:none;border-radius:8px;
+    padding:14px;font-weight:700;font-size:14px;
   }
-
-  .checkout-btn:disabled{
-    background:var(--surface-2);
-    color:var(--muted);
-  }
+  .checkout-btn:disabled{background:var(--surface-2);color:var(--muted);}
 
   .modal-overlay{
-    position:fixed;
-    inset:0;
-    background:rgba(0,0,0,.6);
-    z-index:70;
-    display:none;
-    align-items:center;
-    justify-content:center;
-    padding:20px;
+    position:fixed;inset:0;background:rgba(0,0,0,.6);z-index:70;
+    display:none;align-items:center;justify-content:center;padding:20px;
   }
-
-  .modal-overlay.show{
-    display:flex;
-  }
-
+  .modal-overlay.show{display:flex;}
   .modal{
-    background:var(--surface);
-    border:1px solid var(--line);
-    border-radius:14px;
-    max-width:420px;
-    width:100%;
-    padding:26px;
-    text-align:center;
+    background:var(--surface);border:1px solid var(--line);border-radius:14px;
+    max-width:420px;width:100%;padding:26px;text-align:center;
   }
+  .modal .icon{width:52px;height:52px;border-radius:50%;background:var(--accent-dim);color:var(--accent);
+    display:flex;align-items:center;justify-content:center;margin:0 auto 16px;font-size:24px;}
+  .modal h3{margin:0 0 8px;}
+  .modal p{color:var(--muted);font-size:13.5px;line-height:1.6;margin:0 0 20px;}
+  .modal .order-ref{font-family:var(--mono);color:var(--accent);font-size:13px;}
 
-  .modal .icon{
-    width:52px;
-    height:52px;
-    border-radius:50%;
-    background:var(--accent-dim);
-    color:var(--accent);
-    display:flex;
-    align-items:center;
-    justify-content:center;
-    margin:0 auto 16px;
-    font-size:24px;
-  }
-
-  .modal h3{
-    margin:0 0 8px;
-  }
-
-  .modal p{
-    color:var(--muted);
-    font-size:13.5px;
-    line-height:1.6;
-    margin:0 0 20px;
-  }
-
-  .modal .order-ref{
-    font-family:var(--mono);
-    color:var(--accent);
-    font-size:13px;
-  }
-
+  /* Service detail modal */
   .detail-modal{
-    background:var(--surface);
-    border:1px solid var(--line);
-    border-radius:14px;
-    max-width:760px;
-    width:100%;
-    max-height:88vh;
-    display:flex;
-    flex-direction:column;
-    overflow:hidden;
+    background:var(--surface);border:1px solid var(--line);border-radius:14px;
+    max-width:760px;width:100%;max-height:88vh;display:flex;flex-direction:column;overflow:hidden;
   }
-
   .detail-head{
-    padding:22px 26px;
-    border-bottom:1px solid var(--line);
-    display:flex;
-    justify-content:space-between;
-    align-items:flex-start;
-    gap:12px;
+    padding:22px 26px;border-bottom:1px solid var(--line);
+    display:flex;justify-content:space-between;align-items:flex-start;gap:12px;
   }
-
-  .detail-head-icon{
-    font-size:30px;
-  }
-
-  .detail-head-title{
-    display:flex;
-    align-items:center;
-    gap:12px;
-  }
-
-  .detail-head h3{
-    margin:0 0 4px;
-    font-size:18px;
-  }
-
-  .detail-head .cat{
-    font-family:var(--mono);
-    font-size:11px;
-    color:var(--accent);
-    letter-spacing:1px;
-  }
-
-  .detail-head-meta{
-    font-family:var(--mono);
-    font-size:11px;
-    color:var(--muted);
-    margin-top:6px;
-    display:flex;
-    gap:14px;
-    flex-wrap:wrap;
-  }
-
-  .detail-close{
-    background:none;
-    border:none;
-    color:var(--muted);
-    font-size:20px;
-    flex-shrink:0;
-  }
-
-  .detail-close:hover{
-    color:var(--text);
-  }
-
-  .detail-body{
-    flex:1;
-    overflow-y:auto;
-    padding:22px 26px;
-    display:grid;
-    grid-template-columns:1fr 1fr;
-    gap:22px;
-  }
-
+  .detail-head-icon{font-size:30px;}
+  .detail-head-title{display:flex;align-items:center;gap:12px;}
+  .detail-head h3{margin:0 0 4px;font-size:18px;}
+  .detail-head .cat{font-family:var(--mono);font-size:11px;color:var(--accent);letter-spacing:1px;}
+  .detail-head-meta{font-family:var(--mono);font-size:11px;color:var(--muted);margin-top:6px;display:flex;gap:14px;flex-wrap:wrap;}
+  .detail-close{background:none;border:none;color:var(--muted);font-size:20px;flex-shrink:0;}
+  .detail-close:hover{color:var(--text);}
+  .detail-body{flex:1;overflow-y:auto;padding:22px 26px;display:grid;grid-template-columns:1fr 1fr;gap:22px;}
   .detail-col-title{
-    font-family:var(--mono);
-    font-size:12px;
-    letter-spacing:1.5px;
-    margin-bottom:12px;
-    display:flex;
-    align-items:center;
-    gap:8px;
-    padding-bottom:8px;
-    border-bottom:1px solid var(--line);
+    font-family:var(--mono);font-size:12px;letter-spacing:1.5px;margin-bottom:12px;
+    display:flex;align-items:center;gap:8px;padding-bottom:8px;border-bottom:1px solid var(--line);
   }
-
-  .detail-col-title.basics{
-    color:var(--accent);
-  }
-
-  .detail-col-title.addons{
-    color:var(--text);
-  }
-
+  .detail-col-title.basics{color:var(--accent);}
+  .detail-col-title.addons{color:var(--text);}
   .basic-row{
-    display:flex;
-    justify-content:space-between;
-    align-items:center;
-    gap:10px;
-    padding:9px 0;
-    border-bottom:1px dashed var(--line);
-    font-size:13px;
+    display:flex;justify-content:space-between;align-items:center;gap:10px;
+    padding:9px 0;border-bottom:1px dashed var(--line);font-size:13px;
   }
-
-  .basic-row:last-child{
-    border-bottom:none;
-  }
-
-  .basic-row .b-name{
-    color:var(--text);
-  }
-
-  .basic-row .b-price{
-    font-family:var(--mono);
-    font-size:11.5px;
-    color:var(--muted);
-    white-space:nowrap;
-  }
-
-  .basic-row .b-price.paid{
-    color:var(--accent);
-  }
-
+  .basic-row:last-child{border-bottom:none;}
+  .basic-row .b-name{color:var(--text);}
+  .basic-row .b-price{font-family:var(--mono);font-size:11.5px;color:var(--muted);white-space:nowrap;}
+  .basic-row .b-price.paid{color:var(--accent);}
   .addon-row{
-    display:flex;
-    align-items:center;
-    gap:10px;
-    padding:9px 0;
-    border-bottom:1px dashed var(--line);
+    display:flex;align-items:center;gap:10px;padding:9px 0;border-bottom:1px dashed var(--line);
     cursor:pointer;
   }
-
-  .addon-row:last-child{
-    border-bottom:none;
-  }
-
-  .addon-row input{
-    accent-color:var(--accent);
-    width:16px;
-    height:16px;
-    flex-shrink:0;
-    cursor:pointer;
-  }
-
-  .addon-row .a-name{
-    flex:1;
-    font-size:13px;
-  }
-
-  .addon-row .a-price{
-    font-family:var(--mono);
-    font-size:11.5px;
-    color:var(--muted);
-    white-space:nowrap;
-  }
-
-  .addon-row.checked .a-name{
-    color:var(--accent);
-  }
-
-  .addon-row.checked .a-price{
-    color:var(--accent);
-  }
-
+  .addon-row:last-child{border-bottom:none;}
+  .addon-row input{accent-color:var(--accent);width:16px;height:16px;flex-shrink:0;cursor:pointer;}
+  .addon-row .a-name{flex:1;font-size:13px;}
+  .addon-row .a-price{font-family:var(--mono);font-size:11.5px;color:var(--muted);white-space:nowrap;}
+  .addon-row.checked .a-name{color:var(--accent);}
+  .addon-row.checked .a-price{color:var(--accent);}
   .detail-foot{
-    padding:18px 26px 22px;
-    border-top:1px solid var(--line);
-    display:flex;
-    align-items:center;
-    justify-content:space-between;
-    gap:16px;
-    flex-wrap:wrap;
+    padding:18px 26px 22px;border-top:1px solid var(--line);
+    display:flex;align-items:center;justify-content:space-between;gap:16px;flex-wrap:wrap;
   }
-
-  .detail-total-label{
-    font-family:var(--mono);
-    font-size:11px;
-    color:var(--muted);
-  }
-
-  .detail-total-value{
-    font-family:var(--mono);
-    font-size:20px;
-    font-weight:700;
-  }
-
+  .detail-total-label{font-family:var(--mono);font-size:11px;color:var(--muted);}
+  .detail-total-value{font-family:var(--mono);font-size:20px;font-weight:700;}
   .detail-add-btn{
-    background:var(--accent);
-    color:#121417;
-    border:none;
-    border-radius:8px;
-    padding:13px 26px;
-    font-weight:700;
-    font-size:14px;
-    flex-shrink:0;
+    background:var(--accent);color:#121417;border:none;border-radius:8px;
+    padding:13px 26px;font-weight:700;font-size:14px;flex-shrink:0;
   }
 
-  /* Moyasar Modal */
-  .payment-modal{
-    background:#fff;
-    color:#111;
-    border-radius:14px;
-    max-width:520px;
-    width:100%;
-    max-height:90vh;
-    overflow-y:auto;
-    position:relative;
-  }
-
-  .payment-head{
-    padding:18px 22px;
-    border-bottom:1px solid #e5e7eb;
-    display:flex;
-    align-items:center;
-    justify-content:space-between;
-  }
-
-  .payment-head h3{
-    margin:0;
-    color:#111827;
-    font-size:18px;
-  }
-
-  .payment-head span{
-    color:#16a34a;
-    font-family:var(--mono);
-    font-size:13px;
-    font-weight:700;
-  }
-
-  .payment-body{
-    padding:20px;
-  }
-
-  .payment-total{
-    background:#f3f4f6;
-    border-radius:10px;
-    padding:13px 15px;
-    margin-bottom:18px;
-    display:flex;
-    justify-content:space-between;
-    align-items:center;
-    color:#374151;
-  }
-
-  .payment-total strong{
-    font-family:var(--mono);
-    font-size:18px;
-    color:#111827;
-  }
-
-  .payment-close{
-    background:none;
-    border:none;
-    color:#6b7280;
-    font-size:22px;
-    cursor:pointer;
-  }
-
-  .payment-note{
-    color:#6b7280;
-    font-size:12px;
-    line-height:1.6;
-    text-align:center;
-    margin-top:12px;
-  }
-
-  .mysr-form{
-    width:100%;
-  }
-
-  footer{
-    border-top:1px solid var(--line);
-    padding:26px 20px;
-    text-align:center;
-    color:var(--muted);
-    font-family:var(--mono);
-    font-size:11.5px;
-  }
+  footer{border-top:1px solid var(--line);padding:26px 20px;text-align:center;color:var(--muted);font-family:var(--mono);font-size:11.5px;}
 
   @media (max-width:860px){
-    .hero{
-      grid-template-columns:1fr;
-      padding-top:40px;
-    }
-
-    .hero h1{
-      font-size:30px;
-    }
-
-    .grid{
-      grid-template-columns:repeat(2,1fr);
-    }
-
-    .detail-body{
-      grid-template-columns:1fr;
-    }
+    .hero{grid-template-columns:1fr;padding-top:40px;}
+    .hero h1{font-size:30px;}
+    .grid{grid-template-columns:repeat(2,1fr);}
+    .detail-body{grid-template-columns:1fr;}
   }
-
   @media (max-width:520px){
-    .grid{
-      grid-template-columns:1fr;
-    }
-
-    .hero-cta{
-      flex-direction:column;
-    }
-
-    .payment-modal{
-      max-height:95vh;
-    }
+    .grid{grid-template-columns:1fr;}
   }
 </style>
 </head>
-
 <body>
 
 <header class="topbar">
   <div class="topbar-inner">
-    <div class="logo">
-      <span class="dot"></span>DELIVR
-    </div>
-
+    <div class="logo"><span class="dot"></span>DELIVR</div>
     <button class="cart-btn" id="cartToggle">
-      🛒 طلباتي
-      <span class="cart-count" id="cartCount">0</span>
+      🛒 طلباتي <span class="cart-count" id="cartCount">0</span>
     </button>
   </div>
 </header>
@@ -953,383 +264,111 @@
 <section class="hero">
   <div>
     <div class="eyebrow">خدمات رقمية — تسليم كامل أونلاين</div>
-
-    <h1>
-      مشروعك التقني جاهز، بدون ما تتحرك من مكانك.
-    </h1>
-
-    <p>
-      مواقع، متاجر، مشاريع تخرج، وحلول برمجية جاهزة بسعر واضح من البداية.
-      اضغط على أي خدمة لعرض الأساسيات والكماليات، وحدد اللي يناسبك قبل ما تضيفها لطلباتك.
-    </p>
-
+    <h1>مشروعك التقني جاهز، بدون ما تتحرك من مكانك.</h1>
+    <p>مواقع، متاجر، مشاريع تخرج، وحلول برمجية جاهزة بسعر واضح من البداية. اضغط على أي خدمة لعرض الأساسيات والكماليات، وحدد اللي يناسبك قبل ما تضيفها لطلباتك.</p>
     <div class="hero-cta">
       <a href="#grid" class="btn-primary">تصفّح الخدمات</a>
-      <a href="#grid" class="btn-ghost">كيف يتم التسليم؟</a>
+      <a href="#" class="btn-ghost">كيف يتم التسليم؟</a>
     </div>
   </div>
-
   <div class="spec-panel">
     <div class="scan-line"></div>
-
-    <div class="spec-title">
-      <span>SRV.014 — خدمة مميزة</span>
-      <span>عرض حي</span>
-    </div>
-
-    <div class="spec-row">
-      <span>الخدمة</span>
-      <span>متجر إلكتروني كامل</span>
-    </div>
-
-    <div class="spec-row">
-      <span>مدة التسليم</span>
-      <span>5 أيام عمل</span>
-    </div>
-
-    <div class="spec-row">
-      <span>طريقة التسليم</span>
-      <span>رابط + ملفات المصدر</span>
-    </div>
-
-    <div class="spec-row">
-      <span>التعديلات</span>
-      <span>جولتان مجاناً</span>
-    </div>
-
-    <div class="spec-row">
-      <span>الضمان</span>
-      <span>دعم فني 14 يوم</span>
-    </div>
+    <div class="spec-title"><span>SRV.014 — خدمة مميزة</span><span>عرض حي</span></div>
+    <div class="spec-row"><span>الخدمة</span><span>متجر إلكتروني كامل</span></div>
+    <div class="spec-row"><span>مدة التسليم</span><span>5 أيام عمل</span></div>
+    <div class="spec-row"><span>طريقة التسليم</span><span>رابط + ملفات المصدر</span></div>
+    <div class="spec-row"><span>التعديلات</span><span>جولتان مجاناً</span></div>
+    <div class="spec-row"><span>الضمان</span><span>دعم فني 14 يوم</span></div>
   </div>
 </section>
 
 <div class="filters" id="filters"></div>
-
 <div class="grid" id="grid"></div>
 
-<footer>
-  DELIVR © 2026 — الدفع التجريبي بواسطة Moyasar
-</footer>
+<footer>DELIVR © 2026 — واجهة تجريبية للعرض فقط، لا يوجد دفع فعلي</footer>
 
-<!-- Cart Overlay -->
 <div class="overlay" id="overlay"></div>
-
-<!-- Cart Drawer -->
 <div class="drawer" id="drawer">
-
   <div class="drawer-head">
     <h3>طلباتي</h3>
     <button class="close-btn" id="closeDrawer">✕</button>
   </div>
-
   <div class="drawer-items" id="drawerItems"></div>
-
   <div class="drawer-foot">
-
-    <div class="digital-note">
-      ⚡ تسليم رقمي بالكامل — لا يوجد شحن
-    </div>
-
-    <div class="sum-row">
-      <span>عدد الخدمات</span>
-      <span id="sumCount">0</span>
-    </div>
-
-    <div class="sum-total">
-      <span>الإجمالي</span>
-      <span id="sumTotal">0 ر.س</span>
-    </div>
-
-    <button class="checkout-btn" id="checkoutBtn" disabled>
-      تأكيد الطلب والدفع
-    </button>
-
+    <div class="digital-note">⚡ تسليم رقمي بالكامل — لا يوجد شحن</div>
+    <div class="sum-row"><span>عدد الخدمات</span><span id="sumCount">0</span></div>
+    <div class="sum-total"><span>الإجمالي</span><span id="sumTotal">0 ر.س</span></div>
+    <button class="checkout-btn" id="checkoutBtn" disabled>تأكيد الطلب</button>
   </div>
 </div>
 
-<!-- Service Detail Modal -->
+<!-- Service detail modal: basics + add-ons -->
 <div class="modal-overlay" id="detailOverlay">
-
   <div class="detail-modal">
-
     <div class="detail-head">
-
       <div class="detail-head-title">
-
         <div class="detail-head-icon" id="detailIcon"></div>
-
         <div>
-
           <div class="cat" id="detailCat"></div>
-
           <h3 id="detailName"></h3>
-
           <div class="detail-head-meta">
             <span id="detailDuration"></span>
             <span id="detailDelivery"></span>
           </div>
-
         </div>
-
       </div>
-
-      <button class="detail-close" id="detailClose">
-        ✕
-      </button>
-
+      <button class="detail-close" id="detailClose">✕</button>
     </div>
-
     <div class="detail-body">
-
       <div>
-
-        <div class="detail-col-title basics">
-          🟢 الأساسيات — ضمن سعر الخدمة
-        </div>
-
+        <div class="detail-col-title basics">🟢 الأساسيات — ضمن سعر الخدمة</div>
         <div id="detailBasics"></div>
-
       </div>
-
       <div>
-
-        <div class="detail-col-title addons">
-          🔵 الكماليات — إضافات اختيارية
-        </div>
-
+        <div class="detail-col-title addons">🔵 الكماليات — إضافات اختيارية</div>
         <div id="detailAddons"></div>
-
       </div>
-
     </div>
-
     <div class="detail-foot">
-
       <div>
-        <div class="detail-total-label">
-          الإجمالي مع المحدد
-        </div>
-
-        <div class="detail-total-value" id="detailTotal">
-          0 ر.س
-        </div>
+        <div class="detail-total-label">الإجمالي مع المحدد</div>
+        <div class="detail-total-value" id="detailTotal">0 ر.س</div>
       </div>
-
-      <button class="detail-add-btn" id="detailAddBtn">
-        أضف للسلة
-      </button>
-
+      <button class="detail-add-btn" id="detailAddBtn">أضف للسلة</button>
     </div>
-
   </div>
 </div>
 
-<!-- Moyasar Payment Modal -->
-<div class="modal-overlay" id="paymentOverlay">
-
-  <div class="payment-modal">
-
-    <div class="payment-head">
-
-      <h3>
-        إتمام الدفع
-      </h3>
-
-      <button class="payment-close" id="paymentClose">
-        ✕
-      </button>
-
-    </div>
-
-    <div class="payment-body">
-
-      <div class="payment-total">
-
-        <span>
-          إجمالي الطلب
-        </span>
-
-        <strong id="paymentTotal">
-          0 ر.س
-        </strong>
-
-      </div>
-
-      <!-- Moyasar Payment Form -->
-      <div class="mysr-form"></div>
-
-      <div class="payment-note">
-        الدفع تجريبي حاليًا بواسطة Moyasar Test Mode.
-        لا تستخدم بيانات بطاقتك الحقيقية.
-      </div>
-
-    </div>
-
-  </div>
-
-</div>
-
-<!-- Success Modal -->
 <div class="modal-overlay" id="modalOverlay">
-
   <div class="modal">
-
-    <div class="icon">
-      ✓
-    </div>
-
-    <h3>
-      تم استلام العملية
-    </h3>
-
-    <p>
-      تمت العودة من بوابة الدفع.
-      يرجى التحقق من حالة العملية قبل اعتبار الطلب مدفوعًا بشكل نهائي.
-    </p>
-
-    <div class="order-ref" id="orderRef">
-      ORDER — #0000
-    </div>
-
+    <div class="icon">✓</div>
+    <h3>تم استلام طلبك</h3>
+    <p>هذا عرض تجريبي للواجهة فقط. في المتجر الفعلي، سيتم التواصل معك لتفاصيل التنفيذ وتسليم العمل رقمياً حسب المدة المحددة لكل خدمة.</p>
+    <div class="order-ref" id="orderRef">ORDER — #0000</div>
     <br><br>
-
-    <button class="btn-primary" style="width:100%" id="modalClose">
-      إغلاق
-    </button>
-
+    <button class="btn-primary" style="width:100%" id="modalClose">إغلاق</button>
   </div>
 </div>
 
 <script>
-
-/* =========================================================
-   SERVICES
-========================================================= */
-
 const SERVICES = [
-
-  {
-    id:1,
-    ref:'014',
-    name:'متجر إلكتروني كامل',
-    cat:'مواقع',
-    icon:'🛍️',
-    price:1800,
-    days:'5 أيام',
-    delivery:'رابط + كود المصدر',
-    desc:'متجر متكامل بسلة تسوق وصفحات منتجات، جاهز للربط بالدفع.'
-  },
-
-  {
-    id:2,
-    ref:'027',
-    name:'موقع تعريفي لشركة',
-    cat:'مواقع',
-    icon:'🌐',
-    price:900,
-    days:'3 أيام',
-    delivery:'رابط + كود المصدر',
-    desc:'صفحة أو موقع متعدد الصفحات يعرض خدماتك بشكل احترافي.'
-  },
-
-  {
-    id:3,
-    ref:'041',
-    name:'مشروع تخرج — نظام إدارة',
-    cat:'تخرج',
-    icon:'🎓',
-    price:1500,
-    days:'10 أيام',
-    delivery:'كود + توثيق كامل',
-    desc:'نظام ويب متكامل (Frontend + Backend + قاعدة بيانات) بتوثيق أكاديمي.'
-  },
-
-  {
-    id:4,
-    ref:'042',
-    name:'مشروع تخرج — تطبيق موبايل',
-    cat:'تخرج',
-    icon:'📱',
-    price:1700,
-    days:'12 يوم',
-    delivery:'كود + توثيق كامل',
-    desc:'تطبيق موبايل بفكرة عملية، مع تقرير المشروع وعرض تقديمي.'
-  },
-
-  {
-    id:5,
-    ref:'050',
-    name:'تقرير وتوثيق مشروع تخرج',
-    cat:'تخرج',
-    icon:'📄',
-    price:450,
-    days:'4 أيام',
-    delivery:'ملف Word/PDF',
-    desc:'كتابة التوثيق الأكاديمي الكامل لمشروعك حسب متطلبات جامعتك.'
-  },
-
-  {
-    id:6,
-    ref:'033',
-    name:'لوحة تحكم Admin',
-    cat:'برمجة',
-    icon:'🗂️',
-    price:1100,
-    days:'6 أيام',
-    delivery:'رابط + كود المصدر',
-    desc:'لوحة تحكم لإدارة المستخدمين والبيانات مع صلاحيات وتقارير.'
-  },
-
-  {
-    id:7,
-    ref:'058',
-    name:'بوت واتساب/تلغرام',
-    cat:'برمجة',
-    icon:'🤖',
-    price:650,
-    days:'3 أيام',
-    delivery:'إعداد + تشغيل مباشر',
-    desc:'بوت آلي للرد على الاستفسارات أو استقبال الطلبات تلقائياً.'
-  },
-
-  {
-    id:8,
-    ref:'061',
-    name:'تصميم UI/UX لتطبيق',
-    cat:'تصميم',
-    icon:'🎨',
-    price:750,
-    days:'4 أيام',
-    delivery:'ملف Figma',
-    desc:'تصميم واجهات كاملة لتطبيقك مع نظام تصميم موحّد.'
-  },
-
-  {
-    id:9,
-    ref:'066',
-    name:'هوية بصرية + شعار',
-    cat:'تصميم',
-    icon:'✏️',
-    price:400,
-    days:'3 أيام',
-    delivery:'ملفات مصدر + دليل استخدام',
-    desc:'شعار واحترافي مع لوحة ألوان وخطوط جاهزة للاستخدام.'
-  }
-
+  {id:1, ref:'014', name:'متجر إلكتروني كامل', cat:'مواقع', icon:'🛍️', price:1800, days:'5 أيام', delivery:'رابط + كود المصدر', desc:'متجر متكامل بسلة تسوق وصفحات منتجات، جاهز للربط بالدفع.'},
+  {id:2, ref:'027', name:'موقع تعريفي لشركة', cat:'مواقع', icon:'🌐', price:900, days:'3 أيام', delivery:'رابط + كود المصدر', desc:'صفحة أو موقع متعدد الصفحات يعرض خدماتك بشكل احترافي.'},
+  {id:3, ref:'041', name:'مشروع تخرج — نظام إدارة', cat:'تخرج', icon:'🎓', price:1500, days:'10 أيام', delivery:'كود + توثيق كامل', desc:'نظام ويب متكامل (Frontend + Backend + قاعدة بيانات) بتوثيق أكاديمي.'},
+  {id:4, ref:'042', name:'مشروع تخرج — تطبيق موبايل', cat:'تخرج', icon:'📱', price:1700, days:'12 يوم', delivery:'كود + توثيق كامل', desc:'تطبيق موبايل بفكرة عملية، مع تقرير المشروع وعرض تقديمي.'},
+  {id:5, ref:'050', name:'تقرير وتوثيق مشروع تخرج', cat:'تخرج', icon:'📄', price:450, days:'4 أيام', delivery:'ملف Word/PDF', desc:'كتابة التوثيق الأكاديمي الكامل لمشروعك حسب متطلبات جامعتك.'},
+  {id:6, ref:'033', name:'لوحة تحكم Admin', cat:'برمجة', icon:'🗂️', price:1100, days:'6 أيام', delivery:'رابط + كود المصدر', desc:'لوحة تحكم لإدارة المستخدمين والبيانات مع صلاحيات وتقارير.'},
+  {id:7, ref:'058', name:'بوت واتساب/تلغرام', cat:'برمجة', icon:'🤖', price:650, days:'3 أيام', delivery:'إعداد + تشغيل مباشر', desc:'بوت آلي للرد على الاستفسارات أو استقبال الطلبات تلقائياً.'},
+  {id:8, ref:'061', name:'تصميم UI/UX لتطبيق', cat:'تصميم', icon:'🎨', price:750, days:'4 أيام', delivery:'ملف Figma', desc:'تصميم واجهات كاملة لتطبيقك مع نظام تصميم موحّد.'},
+  {id:9, ref:'066', name:'هوية بصرية + شعار', cat:'تصميم', icon:'✏️', price:400, days:'3 أيام', delivery:'ملفات مصدر + دليل استخدام', desc:'شعار واحترافي مع لوحة ألوان وخطوط جاهزة للاستخدام.'},
 ];
 
-
-/* =========================================================
-   SERVICE DETAILS
-========================================================= */
-
+// تفاصيل كل خدمة: الأساسيات (معلوماتية، ضمن السعر) والكماليات (اختيارية، تُضاف للسعر)
 const SERVICE_DETAILS = {
-
-  1:{
-    basics:[
-      {name:'تصميم المتجر',price:500},
-      {name:'ربط الدومين',price:150},
+  1: {
+    basics: [
+      {name:'تصميم المتجر', price:500},
+      {name:'ربط الدومين', price:150},
       {name:'رفع وتشغيل الموقع'},
       {name:'سلة المشتريات'},
       {name:'صفحات المنتجات'},
@@ -1337,31 +376,28 @@ const SERVICE_DETAILS = {
       {name:'توافق الجوال والآيباد'},
       {name:'صفحة «من نحن»'},
       {name:'صفحة «تواصل معنا»'},
-      {name:'بوابة الدفع',price:200},
-      {name:'الشروط والأحكام والسياسات الأساسية'}
+      {name:'بوابة الدفع', price:200},
+      {name:'الشروط والأحكام والسياسات الأساسية'},
     ],
-
-    addons:[
-      {name:'تصميم شعار',price:100},
-      {name:'هوية بصرية بسيطة',price:150},
-      {name:'ربط واتساب',price:50},
-      {name:'نسخة إنجليزية',price:150},
-      {name:'صفحة إضافية',price:50},
-      {name:'إضافة 20 منتج إضافي',price:50},
-      {name:'تحسين SEO',price:100},
-      {name:'كوبونات وخصومات',price:75},
-      {name:'تقييمات المنتجات',price:75},
-      {name:'إشعارات وتنبيهات',price:100},
-      {name:'صيانة شهرية',price:100,monthly:true},
-      {name:'دعم فني شهري',price:100,monthly:true}
+    addons: [
+      {name:'تصميم شعار', price:100},
+      {name:'هوية بصرية بسيطة', price:150},
+      {name:'ربط واتساب', price:50},
+      {name:'نسخة إنجليزية', price:150},
+      {name:'صفحة إضافية', price:50},
+      {name:'إضافة 20 منتج إضافي', price:50},
+      {name:'تحسين SEO', price:100},
+      {name:'كوبونات وخصومات', price:75},
+      {name:'تقييمات المنتجات', price:75},
+      {name:'إشعارات وتنبيهات', price:100},
+      {name:'صيانة شهرية', price:100, monthly:true},
+      {name:'دعم فني شهري', price:100, monthly:true},
     ]
   },
-
-
-  2:{
-    basics:[
-      {name:'تصميم موقع تعريفي احترافي',price:500},
-      {name:'ربط الدومين',price:50},
+  2: {
+    basics: [
+      {name:'تصميم موقع تعريفي احترافي', price:500},
+      {name:'ربط الدومين', price:50},
       {name:'استضافة سنة'},
       {name:'حتى 6 صفحات'},
       {name:'تصميم متجاوب للجوال والكمبيوتر'},
@@ -1369,32 +405,29 @@ const SERVICE_DETAILS = {
       {name:'ربط واتساب'},
       {name:'ربط خرائط جوجل'},
       {name:'سرعة وأداء محسن'},
-      {name:'تحسين SEO أساسي',price:100},
+      {name:'تحسين SEO أساسي', price:100},
       {name:'تدريب بسيط على إدارة الموقع'},
-      {name:'دعم فني لمدة شهر',price:100,monthly:true},
-      {name:'تعديل بسيط بعد التسليم'}
+      {name:'دعم فني لمدة شهر', price:100, monthly:true},
+      {name:'تعديل بسيط بعد التسليم'},
     ],
-
-    addons:[
-      {name:'تصميم شعار احترافي',price:100},
-      {name:'هوية بصرية بسيطة',price:150},
-      {name:'ربط واتساب احترافي',price:50},
-      {name:'نسخة إنجليزية للموقع',price:150},
-      {name:'صفحة إضافية',price:50},
-      {name:'إضافة 20 صورة/محتوى إضافي',price:50},
-      {name:'تحسين SEO متقدم',price:100},
-      {name:'كوبونات وخصومات',price:75},
-      {name:'تقييمات العملاء',price:75},
-      {name:'إشعارات وتنبيهات',price:100},
-      {name:'صيانة شهرية',price:100,monthly:true},
-      {name:'دعم فني شهر',price:100,monthly:true}
+    addons: [
+      {name:'تصميم شعار احترافي', price:100},
+      {name:'هوية بصرية بسيطة', price:150},
+      {name:'ربط واتساب احترافي', price:50},
+      {name:'نسخة إنجليزية للموقع', price:150},
+      {name:'صفحة إضافية', price:50},
+      {name:'إضافة 20 صورة/محتوى إضافي', price:50},
+      {name:'تحسين SEO متقدم', price:100},
+      {name:'كوبونات وخصومات', price:75},
+      {name:'تقييمات العملاء', price:75},
+      {name:'إشعارات وتنبيهات', price:100},
+      {name:'صيانة شهرية', price:100, monthly:true},
+      {name:'دعم فني شهر', price:100, monthly:true},
     ]
   },
-
-
-  3:{
-    basics:[
-      {name:'تنفيذ مشروع تخرج متكامل حسب المتطلبات',price:1500},
+  3: {
+    basics: [
+      {name:'تنفيذ مشروع تخرج متكامل حسب المتطلبات', price:1500},
       {name:'تحليل فكرة المشروع والمتطلبات'},
       {name:'تصميم واجهات المشروع'},
       {name:'برمجة الوظائف الأساسية'},
@@ -1403,28 +436,25 @@ const SERVICE_DETAILS = {
       {name:'اختبار المشروع وإصلاح الأخطاء'},
       {name:'تجهيز المشروع للتشغيل والتسليم'},
       {name:'شرح طريقة تشغيل المشروع'},
-      {name:'تعديلين بعد التسليم'}
+      {name:'تعديلين بعد التسليم'},
     ],
-
-    addons:[
-      {name:'تصميم شعار وهوية بسيطة للمشروع',price:150},
-      {name:'تصميم واجهات احترافية إضافية',price:200},
-      {name:'إضافة نظام تسجيل دخول وحسابات مستخدمين',price:250},
-      {name:'لوحة تحكم للإدارة',price:200},
-      {name:'إضافة لغة ثانية',price:150},
-      {name:'ربط API أو خدمة خارجية',price:150},
-      {name:'استضافة ورفع المشروع',price:200},
-      {name:'توثيق تقني للمشروع',price:150},
-      {name:'تجهيز عرض تقديمي للمشروع',price:150},
-      {name:'فيديو شرح للمشروع',price:100},
-      {name:'دعم فني وصيانه',price:100,monthly:true}
+    addons: [
+      {name:'تصميم شعار وهوية بسيطة للمشروع', price:150},
+      {name:'تصميم واجهات احترافية إضافية', price:200},
+      {name:'إضافة نظام تسجيل دخول وحسابات مستخدمين', price:250},
+      {name:'لوحة تحكم للإدارة', price:200},
+      {name:'إضافة لغة ثانية', price:150},
+      {name:'ربط API أو خدمة خارجية', price:150},
+      {name:'استضافة ورفع المشروع', price:200},
+      {name:'توثيق تقني للمشروع', price:150},
+      {name:'تجهيز عرض تقديمي للمشروع', price:150},
+      {name:'فيديو شرح للمشروع', price:100},
+      {name:'دعم فني وصيانه', price:100, monthly:true},
     ]
   },
-
-
-  6:{
-    basics:[
-      {name:'برمجة لوحة تحكم Admin',price:1100},
+  6: {
+    basics: [
+      {name:'برمجة لوحة تحكم Admin', price:1100},
       {name:'تصميم واجهة لوحة التحكم'},
       {name:'تسجيل دخول المشرف'},
       {name:'إدارة المستخدمين'},
@@ -1432,25 +462,22 @@ const SERVICE_DETAILS = {
       {name:'ربط قاعدة البيانات'},
       {name:'لوحة إحصائيات أساسية'},
       {name:'صلاحيات الإدارة الأساسية'},
-      {name:'متوافقة مع الجوال والكمبيوتر'}
+      {name:'متوافقة مع الجوال والكمبيوتر'},
     ],
-
-    addons:[
-      {name:'نظام صلاحيات متقدم',price:200},
-      {name:'تقارير وإحصائيات متقدمة',price:200},
-      {name:'تصدير البيانات PDF / Excel',price:150},
-      {name:'نظام إشعارات',price:200},
-      {name:'سجل العمليات',price:200},
-      {name:'إضافة صفحات للوحة',price:150},
-      {name:'ربط API',price:200},
-      {name:'صيانة ودعم فني',price:100,monthly:true}
+    addons: [
+      {name:'نظام صلاحيات متقدم', price:200},
+      {name:'تقارير وإحصائيات متقدمة', price:200},
+      {name:'تصدير البيانات PDF / Excel', price:150},
+      {name:'نظام إشعارات', price:200},
+      {name:'سجل العمليات', price:200},
+      {name:'إضافة صفحات للوحة', price:150},
+      {name:'ربط API', price:200},
+      {name:'صيانة ودعم فني', price:100, monthly:true},
     ]
   },
-
-
-  8:{
-    basics:[
-      {name:'تصميم UX/UI لتطبيق',price:750},
+  8: {
+    basics: [
+      {name:'تصميم UX/UI لتطبيق', price:750},
       {name:'دراسة فكرة التطبيق'},
       {name:'تصميم تجربة المستخدم UX'},
       {name:'تصميم واجهات التطبيق UI'},
@@ -1458,25 +485,22 @@ const SERVICE_DETAILS = {
       {name:'تصميم متناسق واحترافي'},
       {name:'نموذج تفاعلي Prototype'},
       {name:'تسليم ملفات التصميم'},
-      {name:'تعديلين على التصميم'}
+      {name:'تعديلين على التصميم'},
     ],
-
-    addons:[
-      {name:'شاشة إضافية',price:50},
-      {name:'تصميم شعار',price:150},
-      {name:'هوية بصرية بسيطة',price:150},
-      {name:'تصميم Prototype متقدم',price:150},
-      {name:'تصميم الوضع الليلي',price:150},
-      {name:'تصميم نسخة ويب',price:150},
-      {name:'تعديلات إضافية',price:100},
-      {name:'Design System متكامل',price:200}
+    addons: [
+      {name:'شاشة إضافية', price:50},
+      {name:'تصميم شعار', price:150},
+      {name:'هوية بصرية بسيطة', price:150},
+      {name:'تصميم Prototype متقدم', price:150},
+      {name:'تصميم الوضع الليلي', price:150},
+      {name:'تصميم نسخة ويب', price:150},
+      {name:'تعديلات إضافية', price:100},
+      {name:'Design System متكامل', price:200},
     ]
   },
-
-
-  5:{
-    basics:[
-      {name:'إعداد وتنسيق تقرير مشروع تخرج',price:450},
+  5: {
+    basics: [
+      {name:'إعداد وتنسيق تقرير مشروع تخرج', price:450},
       {name:'تنسيق التقرير بشكل احترافي'},
       {name:'صفحة الغلاف'},
       {name:'فهرس المحتويات'},
@@ -1484,24 +508,21 @@ const SERVICE_DETAILS = {
       {name:'تنسيق الجداول والصور'},
       {name:'إضافة المراجع والمصادر'},
       {name:'تدقيق وتنسيق الملف'},
-      {name:'تسليم PDF وWord'}
+      {name:'تسليم PDF وWord'},
     ],
-
-    addons:[
-      {name:'عرض تقديمي للمشروع',price:150},
-      {name:'تصميم مخططات ورسومات',price:100},
-      {name:'تصميم غلاف احترافي',price:150},
-      {name:'ترجمة التقرير للإنجليزية',price:150},
-      {name:'تنسيق إضافي حسب نموذج الجامعة',price:100},
-      {name:'إضافة ملاحق وجداول',price:100},
-      {name:'تعديلات إضافيه',price:100}
+    addons: [
+      {name:'عرض تقديمي للمشروع', price:150},
+      {name:'تصميم مخططات ورسومات', price:100},
+      {name:'تصميم غلاف احترافي', price:150},
+      {name:'ترجمة التقرير للإنجليزية', price:150},
+      {name:'تنسيق إضافي حسب نموذج الجامعة', price:100},
+      {name:'إضافة ملاحق وجداول', price:100},
+      {name:'تعديلات إضافيه', price:100},
     ]
   },
-
-
-  7:{
-    basics:[
-      {name:'تطوير بوت واتساب',price:650},
+  7: {
+    basics: [
+      {name:'تطوير بوت واتساب', price:650},
       {name:'إعداد البوت وربطه'},
       {name:'قائمة خيارات تفاعلية'},
       {name:'الردود التلقائية'},
@@ -1509,25 +530,22 @@ const SERVICE_DETAILS = {
       {name:'أسئلة وأجوبة شائعة'},
       {name:'استقبال بيانات العملاء'},
       {name:'تحويل المحادثة للموظف'},
-      {name:'اختبار البوت'}
+      {name:'اختبار البوت'},
     ],
-
-    addons:[
-      {name:'ربط قاعدة بيانات',price:150},
-      {name:'ربط CRM',price:200},
-      {name:'ربط API',price:200},
-      {name:'نظام حجز مواعيد',price:150},
-      {name:'إرسال إشعارات',price:150},
-      {name:'ذكاء اصطناعي للردود',price:200},
-      {name:'إضافة لغة ثانية',price:150},
-      {name:'صيانة ودعم فني',price:100,monthly:true}
+    addons: [
+      {name:'ربط قاعدة بيانات', price:150},
+      {name:'ربط CRM', price:200},
+      {name:'ربط API', price:200},
+      {name:'نظام حجز مواعيد', price:150},
+      {name:'إرسال إشعارات', price:150},
+      {name:'ذكاء اصطناعي للردود', price:200},
+      {name:'إضافة لغة ثانية', price:150},
+      {name:'صيانة ودعم فني', price:100, monthly:true},
     ]
   },
-
-
-  9:{
-    basics:[
-      {name:'تصميم هوية بصرية + شعار',price:400},
+  9: {
+    basics: [
+      {name:'تصميم هوية بصرية + شعار', price:400},
       {name:'تصميم شعار احترافي'},
       {name:'اختيار الألوان الأساسية'},
       {name:'اختيار الخطوط المناسبة'},
@@ -1535,978 +553,240 @@ const SERVICE_DETAILS = {
       {name:'تطبيق الهوية على نماذج أساسية'},
       {name:'تسليم الشعار بصيغ متعددة'},
       {name:'تسليم ملفات الهوية'},
-      {name:'تعديلين على التصميم'}
+      {name:'تعديلين على التصميم'},
     ],
-
-    addons:[
-      {name:'تصميم بطاقة أعمال',price:100},
-      {name:'تصميم ختم رسمي',price:100},
-      {name:'تصميم ورق مراسلات',price:100},
-      {name:'تصميم ملف تعريفي',price:100},
-      {name:'تصميم قوالب سوشيال ميديا',price:150},
-      {name:'دليل هوية بصرية متكامل',price:150},
-      {name:'تصميم توقيع بريد إلكتروني',price:100},
-      {name:'تصميم أيقونات خاصة بالهوية',price:50},
-      {name:'تعديلات إضافيه',price:100}
+    addons: [
+      {name:'تصميم بطاقة أعمال', price:100},
+      {name:'تصميم ختم رسمي', price:100},
+      {name:'تصميم ورق مراسلات', price:100},
+      {name:'تصميم ملف تعريفي', price:100},
+      {name:'تصميم قوالب سوشيال ميديا', price:150},
+      {name:'دليل هوية بصرية متكامل', price:150},
+      {name:'تصميم توقيع بريد إلكتروني', price:100},
+      {name:'تصميم أيقونات خاصة بالهوية', price:50},
+      {name:'تعديلات إضافيه', price:100},
     ]
-  }
-
+  },
 };
-
-
-/* تطبيق تفاصيل مشروع الموبايل على نفس تفاصيل مشروع التخرج */
+// مشروع التخرج (تطبيق موبايل) يستخدم نفس قائمة مشروع التخرج (نظام إدارة)
 SERVICE_DETAILS[4] = SERVICE_DETAILS[3];
 
-
-/* =========================================================
-   FILTERS / CART
-========================================================= */
-
-const CATS = [
-  'الكل',
-  ...new Set(SERVICES.map(p=>p.cat))
-];
-
+const CATS = ['الكل', ...new Set(SERVICES.map(p=>p.cat))];
 let activeCat = 'الكل';
-
-let cart = {};
-
+let cart = {}; // { [cartKey]: { id, selectedAddons:[indices] } }
 let cartSeq = 0;
 
-
-/* Elements */
-
 const filtersEl = document.getElementById('filters');
-
 const gridEl = document.getElementById('grid');
 
-const drawer = document.getElementById('drawer');
-
-const overlay = document.getElementById('overlay');
-
-const drawerItems = document.getElementById('drawerItems');
-
-const cartCount = document.getElementById('cartCount');
-
-const sumCount = document.getElementById('sumCount');
-
-const sumTotal = document.getElementById('sumTotal');
-
-const checkoutBtn = document.getElementById('checkoutBtn');
-
-
-/* =========================================================
-   FILTERS
-========================================================= */
-
 function renderFilters(){
-
   filtersEl.innerHTML = CATS.map(c =>
-
-    `<button class="chip ${c===activeCat?'active':''}" data-cat="${c}">
-      ${c}
-    </button>`
-
+    `<button class="chip ${c===activeCat?'active':''}" data-cat="${c}">${c}</button>`
   ).join('');
-
-
   filtersEl.querySelectorAll('.chip').forEach(btn=>{
-
-    btn.addEventListener('click',()=>{
-
+    btn.addEventListener('click', ()=>{
       activeCat = btn.dataset.cat;
-
       renderFilters();
-
       renderGrid();
-
     });
-
   });
-
 }
-
-
-/* =========================================================
-   SERVICES GRID
-========================================================= */
 
 function renderGrid(){
-
-  const items =
-    activeCat === 'الكل'
-      ? SERVICES
-      : SERVICES.filter(p=>p.cat===activeCat);
-
-
+  const items = activeCat==='الكل' ? SERVICES : SERVICES.filter(p=>p.cat===activeCat);
   gridEl.innerHTML = items.map(p => `
-
     <div class="card" data-id="${p.id}">
-
-      <div class="card-media">
-
-        ${p.icon}
-
-        <span class="ref-tag">
-          SRV.${p.ref}
-        </span>
-
-        <span class="delivery-tag">
-          تسليم ${p.days}
-        </span>
-
-      </div>
-
-
+      <div class="card-media">${p.icon}<span class="ref-tag">SRV.${p.ref}</span><span class="delivery-tag">تسليم ${p.days}</span></div>
       <div class="card-body">
-
-        <div class="card-cat">
-          ${p.cat}
-        </div>
-
-        <div class="card-name">
-          ${p.name}
-        </div>
-
-        <div class="card-desc">
-          ${p.desc}
-        </div>
-
-        <div class="card-meta">
-          📦 ${p.delivery}
-        </div>
-
+        <div class="card-cat">${p.cat}</div>
+        <div class="card-name">${p.name}</div>
+        <div class="card-desc">${p.desc}</div>
+        <div class="card-meta">📦 ${p.delivery}</div>
         <div class="card-foot">
-
-          <div class="price">
-            ${p.price} ر.س
-          </div>
-
-          <button class="add-btn" data-id="${p.id}">
-            عرض التفاصيل
-          </button>
-
+          <div class="price">${p.price} ر.س</div>
+          <button class="add-btn" data-id="${p.id}">عرض التفاصيل</button>
         </div>
-
       </div>
-
     </div>
-
   `).join('');
-
-
   gridEl.querySelectorAll('.card').forEach(card=>{
-
-    card.addEventListener('click',()=>{
-
-      openDetail(Number(card.dataset.id));
-
-    });
-
+    card.addEventListener('click', ()=> openDetail(Number(card.dataset.id)));
   });
-
 }
 
+/* ---------------- Detail modal (basics + add-ons) ---------------- */
+const detailOverlay = document.getElementById('detailOverlay');
+const detailIcon = document.getElementById('detailIcon');
+const detailCat = document.getElementById('detailCat');
+const detailName = document.getElementById('detailName');
+const detailDuration = document.getElementById('detailDuration');
+const detailDelivery = document.getElementById('detailDelivery');
+const detailBasics = document.getElementById('detailBasics');
+const detailAddons = document.getElementById('detailAddons');
+const detailTotal = document.getElementById('detailTotal');
+const detailAddBtn = document.getElementById('detailAddBtn');
 
-/* =========================================================
-   DETAIL MODAL
-========================================================= */
-
-const detailOverlay =
-  document.getElementById('detailOverlay');
-
-const detailIcon =
-  document.getElementById('detailIcon');
-
-const detailCat =
-  document.getElementById('detailCat');
-
-const detailName =
-  document.getElementById('detailName');
-
-const detailDuration =
-  document.getElementById('detailDuration');
-
-const detailDelivery =
-  document.getElementById('detailDelivery');
-
-const detailBasics =
-  document.getElementById('detailBasics');
-
-const detailAddons =
-  document.getElementById('detailAddons');
-
-const detailTotal =
-  document.getElementById('detailTotal');
-
-const detailAddBtn =
-  document.getElementById('detailAddBtn');
-
-
-let currentDetail = null;
-
+let currentDetail = null; // { service, checked:Set }
 
 function openDetail(id){
+  const service = SERVICES.find(s=>s.id===id);
+  const details = SERVICE_DETAILS[id] || {basics:[], addons:[]};
+  currentDetail = { service, details, checked: new Set() };
 
-  const service =
-    SERVICES.find(s=>s.id===id);
+  detailIcon.textContent = service.icon;
+  detailCat.textContent = service.cat;
+  detailName.textContent = service.name;
+  detailDuration.textContent = '⏱ ' + service.days;
+  detailDelivery.textContent = '📦 ' + service.delivery;
 
-  const details =
-    SERVICE_DETAILS[id] || {
-      basics:[],
-      addons:[]
-    };
+  detailBasics.innerHTML = details.basics.map(b => `
+    <div class="basic-row">
+      <span class="b-name">✓ ${b.name}</span>
+      <span class="b-price ${b.price?'paid':''}">${b.price ? b.price + ' ر.س' : 'ضمن السعر'}</span>
+    </div>
+  `).join('') || '<div class="basic-row"><span class="b-name">لا توجد تفاصيل إضافية</span></div>';
 
+  detailAddons.innerHTML = details.addons.map((a,i) => `
+    <label class="addon-row" data-i="${i}">
+      <input type="checkbox" data-i="${i}">
+      <span class="a-name">${a.name}</span>
+      <span class="a-price">${a.price} ر.س${a.monthly?'/شهر':''}</span>
+    </label>
+  `).join('') || '<div class="basic-row"><span class="b-name">لا توجد إضافات لهذه الخدمة</span></div>';
 
-  currentDetail = {
-    service,
-    details,
-    checked:new Set()
-  };
-
-
-  detailIcon.textContent =
-    service.icon;
-
-  detailCat.textContent =
-    service.cat;
-
-  detailName.textContent =
-    service.name;
-
-  detailDuration.textContent =
-    '⏱ ' + service.days;
-
-  detailDelivery.textContent =
-    '📦 ' + service.delivery;
-
-
-  detailBasics.innerHTML =
-    details.basics.map(b=>`
-
-      <div class="basic-row">
-
-        <span class="b-name">
-          ✓ ${b.name}
-        </span>
-
-        <span class="b-price ${b.price?'paid':''}">
-          ${
-            b.price
-              ? b.price + ' ر.س'
-              : 'ضمن السعر'
-          }
-        </span>
-
-      </div>
-
-    `).join('') ||
-
-    `<div class="basic-row">
-      <span class="b-name">
-        لا توجد تفاصيل إضافية
-      </span>
-    </div>`;
-
-
-  detailAddons.innerHTML =
-    details.addons.map((a,i)=>`
-
-      <label class="addon-row" data-i="${i}">
-
-        <input
-          type="checkbox"
-          data-i="${i}"
-        >
-
-        <span class="a-name">
-          ${a.name}
-        </span>
-
-        <span class="a-price">
-          ${a.price} ر.س${a.monthly?'/شهر':''}
-        </span>
-
-      </label>
-
-    `).join('') ||
-
-    `<div class="basic-row">
-      <span class="b-name">
-        لا توجد إضافات لهذه الخدمة
-      </span>
-    </div>`;
-
-
-  detailAddons
-    .querySelectorAll('input[type="checkbox"]')
-    .forEach(cb=>{
-
-      cb.addEventListener('change',()=>{
-
-        const i =
-          Number(cb.dataset.i);
-
-        const row =
-          cb.closest('.addon-row');
-
-
-        if(cb.checked){
-
-          currentDetail.checked.add(i);
-
-          row.classList.add('checked');
-
-        }else{
-
-          currentDetail.checked.delete(i);
-
-          row.classList.remove('checked');
-
-        }
-
-
-        updateDetailTotal();
-
-      });
-
+  detailAddons.querySelectorAll('input[type="checkbox"]').forEach(cb=>{
+    cb.addEventListener('change', ()=>{
+      const i = Number(cb.dataset.i);
+      const row = cb.closest('.addon-row');
+      if(cb.checked){ currentDetail.checked.add(i); row.classList.add('checked'); }
+      else{ currentDetail.checked.delete(i); row.classList.remove('checked'); }
+      updateDetailTotal();
     });
-
+  });
 
   updateDetailTotal();
-
   detailOverlay.classList.add('show');
-
 }
-
 
 function updateDetailTotal(){
-
   if(!currentDetail) return;
-
-
-  const {
-    service,
-    details,
-    checked
-  } = currentDetail;
-
-
-  let total =
-    service.price;
-
-
-  checked.forEach(i=>{
-
-    total +=
-      details.addons[i].price;
-
-  });
-
-
-  detailTotal.textContent =
-    total + ' ر.س';
-
+  const {service, details, checked} = currentDetail;
+  let total = service.price;
+  checked.forEach(i => total += details.addons[i].price);
+  detailTotal.textContent = total + ' ر.س';
 }
 
-
-document
-  .getElementById('detailClose')
-  .addEventListener('click',closeDetail);
-
-
+document.getElementById('detailClose').addEventListener('click', closeDetail);
 function closeDetail(){
-
   detailOverlay.classList.remove('show');
-
   currentDetail = null;
-
 }
 
-
-detailAddBtn.addEventListener('click',()=>{
-
+detailAddBtn.addEventListener('click', ()=>{
   if(!currentDetail) return;
-
-
-  const key =
-    'c' + (cartSeq++);
-
-
+  const key = 'c' + (cartSeq++);
   cart[key] = {
-
-    id:
-      currentDetail.service.id,
-
-    selectedAddons:
-      [...currentDetail.checked]
-
+    id: currentDetail.service.id,
+    selectedAddons: [...currentDetail.checked]
   };
-
-
   updateCart();
-
   closeDetail();
-
   drawer.classList.add('show');
-
   overlay.classList.add('show');
-
 });
 
-
-/* =========================================================
-   CART
-========================================================= */
+/* ---------------- Cart drawer ---------------- */
+const drawer = document.getElementById('drawer');
+const overlay = document.getElementById('overlay');
+const drawerItems = document.getElementById('drawerItems');
+const cartCount = document.getElementById('cartCount');
+const sumCount = document.getElementById('sumCount');
+const sumTotal = document.getElementById('sumTotal');
+const checkoutBtn = document.getElementById('checkoutBtn');
 
 function cartItemTotal(entry){
-
-  const service =
-    SERVICES.find(s=>s.id===entry.id);
-
-  const details =
-    SERVICE_DETAILS[entry.id] || {
-      addons:[]
-    };
-
-
-  let total =
-    service.price;
-
-
-  entry.selectedAddons.forEach(i=>{
-
-    total +=
-      details.addons[i].price;
-
-  });
-
-
+  const service = SERVICES.find(s=>s.id===entry.id);
+  const details = SERVICE_DETAILS[entry.id] || {addons:[]};
+  let total = service.price;
+  entry.selectedAddons.forEach(i => total += details.addons[i].price);
   return total;
-
 }
-
 
 function updateCart(){
-
-  const keys =
-    Object.keys(cart);
-
-
-  cartCount.textContent =
-    keys.length;
-
+  const keys = Object.keys(cart);
+  cartCount.textContent = keys.length;
 
   if(keys.length===0){
-
-    drawerItems.innerHTML = `
-      <div class="drawer-empty">
-        لا توجد خدمات مطلوبة بعد
-        <br>
-        اضغط على خدمة لتبدأ
-      </div>
-    `;
-
-    sumCount.textContent =
-      '0';
-
-    sumTotal.textContent =
-      '0 ر.س';
-
-    checkoutBtn.disabled =
-      true;
-
+    drawerItems.innerHTML = `<div class="drawer-empty">لا توجد خدمات مطلوبة بعد<br>اضغط على خدمة لتبدأ</div>`;
+    sumCount.textContent = '0';
+    sumTotal.textContent = '0 ر.س';
+    checkoutBtn.disabled = true;
     return;
-
   }
-
 
   let grandTotal = 0;
-
-
-  drawerItems.innerHTML =
-    keys.map(key=>{
-
-      const entry =
-        cart[key];
-
-      const service =
-        SERVICES.find(s=>s.id===entry.id);
-
-      const details =
-        SERVICE_DETAILS[entry.id] || {
-          addons:[]
-        };
-
-
-      const itemTotal =
-        cartItemTotal(entry);
-
-
-      grandTotal +=
-        itemTotal;
-
-
-      const addonsHtml =
-        entry.selectedAddons.length
-
-          ? entry.selectedAddons
-              .map(i=>
-                `+ ${details.addons[i].name}
-                (${details.addons[i].price} ر.س)`
-              )
-              .join('<br>')
-
-          : '';
-
-
-      return `
-
-        <div class="cart-item">
-
-          <div class="cart-item-thumb">
-            ${service.icon}
-          </div>
-
-          <div class="cart-item-info">
-
-            <div class="cart-item-name">
-              ${service.name}
-            </div>
-
-            <div class="cart-item-price">
-              ${itemTotal} ر.س —
-              تسليم خلال ${service.days}
-            </div>
-
-            ${
-              addonsHtml
-                ? `
-                  <div class="cart-item-addons">
-                    ${addonsHtml}
-                  </div>
-                `
-                : ''
-            }
-
-            <div class="cart-item-delivery">
-              📦 ${service.delivery}
-            </div>
-
-            <button
-              class="remove-btn"
-              data-key="${key}">
-              إزالة
-            </button>
-
-          </div>
-
+  drawerItems.innerHTML = keys.map(key=>{
+    const entry = cart[key];
+    const service = SERVICES.find(s=>s.id===entry.id);
+    const details = SERVICE_DETAILS[entry.id] || {addons:[]};
+    const itemTotal = cartItemTotal(entry);
+    grandTotal += itemTotal;
+    const addonsHtml = entry.selectedAddons.length
+      ? entry.selectedAddons.map(i => `+ ${details.addons[i].name} (${details.addons[i].price} ر.س)`).join('<br>')
+      : '';
+    return `
+      <div class="cart-item">
+        <div class="cart-item-thumb">${service.icon}</div>
+        <div class="cart-item-info">
+          <div class="cart-item-name">${service.name}</div>
+          <div class="cart-item-price">${itemTotal} ر.س — تسليم خلال ${service.days}</div>
+          ${addonsHtml ? `<div class="cart-item-addons">${addonsHtml}</div>` : ''}
+          <div class="cart-item-delivery">📦 ${service.delivery}</div>
+          <button class="remove-btn" data-key="${key}">إزالة</button>
         </div>
+      </div>
+    `;
+  }).join('');
 
-      `;
+  sumCount.textContent = keys.length;
+  sumTotal.textContent = grandTotal + ' ر.س';
+  checkoutBtn.disabled = false;
 
-    }).join('');
-
-
-  sumCount.textContent =
-    keys.length;
-
-  sumTotal.textContent =
-    grandTotal + ' ر.س';
-
-  checkoutBtn.disabled =
-    false;
-
-
-  drawerItems
-    .querySelectorAll('.remove-btn')
-    .forEach(btn=>{
-
-      btn.addEventListener('click',()=>{
-
-        delete cart[
-          btn.dataset.key
-        ];
-
-        updateCart();
-
-      });
-
+  drawerItems.querySelectorAll('.remove-btn').forEach(btn=>{
+    btn.addEventListener('click', ()=>{
+      delete cart[btn.dataset.key];
+      updateCart();
     });
-
+  });
 }
 
+document.getElementById('cartToggle').addEventListener('click', ()=>{
+  drawer.classList.add('show');
+  overlay.classList.add('show');
+});
+document.getElementById('closeDrawer').addEventListener('click', closeDrawer);
+overlay.addEventListener('click', ()=>{ closeDrawer(); closeDetail(); });
+function closeDrawer(){
+  drawer.classList.remove('show');
+  overlay.classList.remove('show');
+}
 
-/* =========================================================
-   DRAWER
-========================================================= */
-
-document
-  .getElementById('cartToggle')
-  .addEventListener('click',()=>{
-
-    drawer.classList.add('show');
-
-    overlay.classList.add('show');
-
-  });
-
-
-document
-  .getElementById('closeDrawer')
-  .addEventListener('click',closeDrawer);
-
-
-overlay.addEventListener('click',()=>{
-
+const modalOverlay = document.getElementById('modalOverlay');
+document.getElementById('checkoutBtn').addEventListener('click', ()=>{
+  const ref = 'ORDER — #' + Math.floor(1000+Math.random()*9000);
+  document.getElementById('orderRef').textContent = ref;
+  modalOverlay.classList.add('show');
+});
+document.getElementById('modalClose').addEventListener('click', ()=>{
+  modalOverlay.classList.remove('show');
+  cart = {};
+  updateCart();
   closeDrawer();
-
-  closeDetail();
-
 });
 
-
-function closeDrawer(){
-
-  drawer.classList.remove('show');
-
-  overlay.classList.remove('show');
-
-}
-
-
-/* =========================================================
-   MOYASAR PAYMENT
-========================================================= */
-
-/*
-  هذا مفتاح ميسر التجريبي الذي أرسلته.
-  pk_test آمن للاستخدام في الواجهة.
-*/
-
-const MOYASAR_PUBLISHABLE_KEY =
-  'pk_test_PxvtLhPB9YNXHekBuEMtkFpYShMWmS5RT8dRh5tX';
-
-
-const paymentOverlay =
-  document.getElementById('paymentOverlay');
-
-
-const paymentClose =
-  document.getElementById('paymentClose');
-
-
-const paymentTotal =
-  document.getElementById('paymentTotal');
-
-
-let currentPaymentAmount = 0;
-
-
-/*
-  رابط الرجوع بعد الدفع.
-  عند رفع المتجر على دومين HTTPS سيصبح
-  رابط نفس الصفحة الحالية.
-*/
-
-function getCallbackUrl(){
-
-  return window.location.href
-    .split('#')[0]
-    .split('?')[0];
-
-}
-
-
-/*
-  حساب إجمالي السلة
-*/
-
-function getCartGrandTotal(){
-
-  return Object.keys(cart)
-    .reduce((total,key)=>{
-
-      return total +
-        cartItemTotal(cart[key]);
-
-    },0);
-
-}
-
-
-/*
-  فتح نموذج ميسر
-*/
-
-function openMoyasarPayment(){
-
-  const total =
-    getCartGrandTotal();
-
-
-  if(!total){
-
-    alert('السلة فارغة.');
-
-    return;
-
-  }
-
-
-  currentPaymentAmount =
-    total;
-
-
-  paymentTotal.textContent =
-    total + ' ر.س';
-
-
-  paymentOverlay.classList.add('show');
-
-
-  /*
-    تنظيف النموذج السابق
-  */
-
-  const formContainer =
-    document.querySelector('.mysr-form');
-
-
-  formContainer.innerHTML = '';
-
-
-  /*
-    Moyasar amount يكون بالهللات:
-    1800 ريال = 180000 هللة
-  */
-
-  const amountInHalalas =
-    Math.round(total * 100);
-
-
-  /*
-    تهيئة ميسر
-  */
-
-  Moyasar.init({
-
-    element: '.mysr-form',
-
-    amount: amountInHalalas,
-
-    currency: 'SAR',
-
-    description:
-      'DELIVR Order — ' +
-      Math.floor(
-        1000 +
-        Math.random() * 9000
-      ),
-
-    publishable_api_key:
-      MOYASAR_PUBLISHABLE_KEY,
-
-    callback_url:
-  'https://khidmah-com-sa-e8rf.vercel.app/',
-
-    supported_networks:[
-      'mada',
-      'visa',
-      'mastercard',
-      'amex',
-      'unionpay'
-    ],
-
-    methods:[
-      'creditcard'
-    ],
-
-    on_completed:function(payment){
-
-      console.log(
-        'Moyasar payment initiated:',
-        payment
-      );
-
-    }
-
-  });
-
-}
-
-
-/*
-  زر تأكيد الطلب
-*/
-
-checkoutBtn.addEventListener(
-  'click',
-  openMoyasarPayment
-);
-
-
-/*
-  إغلاق نافذة الدفع
-*/
-
-paymentClose.addEventListener(
-  'click',
-  ()=>{
-    paymentOverlay.classList.remove('show');
-  }
-);
-
-
-/*
-  الضغط خارج نافذة الدفع
-*/
-
-paymentOverlay.addEventListener(
-  'click',
-  (event)=>{
-
-    if(
-      event.target ===
-      paymentOverlay
-    ){
-
-      paymentOverlay.classList.remove('show');
-
-    }
-
-  }
-);
-
-
-/* =========================================================
-   PAYMENT CALLBACK STATUS
-========================================================= */
-
-/*
-  ميسر يرجع إلى callback_url
-  ومعه id/status/message.
-
-  هذا الجزء يعرض النتيجة فقط.
-  التحقق الحقيقي من الدفع يجب أن يكون في Backend.
-*/
-
-function checkPaymentCallback(){
-
-  const params =
-    new URLSearchParams(
-      window.location.search
-    );
-
-
-  const paymentId =
-    params.get('id');
-
-  const status =
-    params.get('status');
-
-  const message =
-    params.get('message');
-
-
-  if(!paymentId) return;
-
-
-  paymentOverlay.classList.remove(
-    'show'
-  );
-
-
-  const ref =
-    'PAYMENT — ' +
-    paymentId;
-
-
-  document.getElementById(
-    'orderRef'
-  ).textContent =
-    ref;
-
-
-  const modal =
-    document.getElementById(
-      'modalOverlay'
-    );
-
-
-  const title =
-    modal.querySelector('h3');
-
-
-  const paragraph =
-    modal.querySelector('p');
-
-
-  if(status === 'paid'){
-
-    title.textContent =
-      'تمت عملية الدفع';
-
-    paragraph.textContent =
-      'تمت إعادة العميل من بوابة الدفع. سيتم اعتماد الطلب بعد التحقق من حالة العملية في الخادم.';
-
-  }else{
-
-    title.textContent =
-      'حالة عملية الدفع';
-
-    paragraph.textContent =
-      message ||
-      'لم يتم تأكيد عملية الدفع.';
-
-  }
-
-
-  modal.classList.add('show');
-
-}
-
-
-/* =========================================================
-   SUCCESS MODAL
-========================================================= */
-
-const modalOverlay =
-  document.getElementById(
-    'modalOverlay'
-  );
-
-
-document
-  .getElementById('modalClose')
-  .addEventListener('click',()=>{
-
-    modalOverlay.classList.remove(
-      'show'
-    );
-
-    cart = {};
-
-    updateCart();
-
-    closeDrawer();
-
-  });
-
-
-/* =========================================================
-   START
-========================================================= */
-
 renderFilters();
-
 renderGrid();
-
 updateCart();
-
-checkPaymentCallback();
-
 </script>
-
 </body>
 </html>
