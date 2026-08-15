@@ -545,6 +545,43 @@
   .footer-links a:hover{color:var(--accent);}
   .footer-links span{color:var(--line);}
 
+  /* قائمة تنقل سريعة */
+  .nav-menu-btn{
+    position:fixed;top:14px;left:14px;z-index:200;
+    width:38px;height:38px;border-radius:10px;
+    background:var(--surface);border:1px solid var(--line);color:var(--text);font-size:16px;
+    display:flex;align-items:center;justify-content:center;
+  }
+  .nav-menu-btn:hover{border-color:var(--accent);color:var(--accent);}
+  .nav-menu-panel{
+    position:fixed;top:58px;left:14px;z-index:200;
+    background:var(--surface);border:1px solid var(--line);border-radius:12px;
+    min-width:210px;padding:8px;display:none;flex-direction:column;gap:2px;
+    box-shadow:0 12px 30px rgba(0,0,0,.4);
+  }
+  .nav-menu-panel.show{display:flex;}
+  .nav-menu-panel a{padding:10px 12px;border-radius:8px;font-size:13.5px;color:var(--text);display:flex;align-items:center;gap:8px;}
+  .nav-menu-panel a:hover{background:var(--surface-2);color:var(--accent);}
+
+  /* جرب حظك */
+  .luck-screen{position:fixed;inset:0;background:var(--bg);z-index:180;display:none;flex-direction:column;overflow:hidden;}
+  .luck-screen.show{display:flex;}
+  .luck-top{padding:16px 24px;border-bottom:1px solid var(--line);display:flex;justify-content:space-between;align-items:center;background:var(--surface);}
+  .luck-top h2{margin:0;font-family:var(--mono);font-size:15px;letter-spacing:1px;}
+  .luck-body{flex:1;overflow-y:auto;padding:26px 20px 40px;max-width:600px;margin:0 auto;width:100%;}
+  .luck-grid{display:grid;grid-template-columns:repeat(5,1fr);gap:10px;}
+  .luck-card{
+    aspect-ratio:1;background:var(--surface);border:1px solid var(--line);border-radius:12px;
+    display:flex;align-items:center;justify-content:center;font-size:17px;font-weight:700;
+    color:var(--muted);transition:border-color .2s, transform .15s, background .2s, opacity .2s;
+  }
+  .luck-card:not(:disabled):hover{border-color:var(--accent);color:var(--accent);transform:translateY(-2px);}
+  .luck-card.disabled{opacity:.3;pointer-events:none;}
+  .luck-card.picked{border-color:var(--accent);color:var(--accent);background:var(--accent-dim);opacity:1;}
+  .luck-win-banner{text-align:center;background:var(--surface);border:1px solid var(--accent);border-radius:14px;padding:26px 20px;margin-top:22px;}
+  .luck-code-box{display:inline-flex;align-items:center;gap:10px;background:var(--accent-dim);border:1px dashed var(--accent);border-radius:8px;padding:10px 16px;font-family:var(--mono);font-weight:700;color:var(--accent);font-size:14px;}
+  .luck-code-box button{background:var(--accent);color:#121417;border:none;border-radius:6px;padding:6px 12px;font-size:11px;font-weight:700;font-family:var(--mono);}
+
   /* تتبع الطلب */
   .track-modal{background:var(--surface);border:1px solid var(--line);border-radius:14px;max-width:440px;width:100%;padding:26px;}
   .track-modal h3{margin:0 0 14px;font-size:16px;}
@@ -578,6 +615,18 @@
 <body>
 
 <button class="admin-gear" id="adminLinkBtn" title="لوحة التحكم" aria-label="لوحة التحكم">⚙️</button>
+
+<button class="nav-menu-btn" id="navMenuBtn" aria-label="القائمة">☰</button>
+<div class="nav-menu-panel" id="navMenuPanel">
+  <a href="#" data-nav="home">🏠 الرئيسية</a>
+  <a href="#" data-nav="services">🛍️ الخدمات</a>
+  <a href="#" data-nav="reviews">⭐ التقييمات</a>
+  <a href="#" data-nav="track">📦 تتبع طلباتي</a>
+  <a href="#" data-nav="luck">🍀 جرب حظك</a>
+  <a href="#" data-nav="about">ℹ️ من نحن</a>
+  <a href="#" data-nav="delivery">🚚 كيف يتم التسليم</a>
+  <a href="#" data-nav="refund">↩️ سياسة الاسترجاع</a>
+</div>
 
 <header class="topbar">
   <div class="topbar-inner">
@@ -990,6 +1039,14 @@
   </div>
 </div>
 
+<div class="luck-screen" id="luckOverlay">
+  <div class="luck-top">
+    <h2>🍀 جرب حظك</h2>
+    <button class="admin-exit" id="luckCloseBtn">إغلاق</button>
+  </div>
+  <div class="luck-body" id="luckBody"></div>
+</div>
+
 <script>
 // ===== بيانات المنتجات الافتراضية =====
 const DEFAULT_PRODUCTS = [
@@ -1368,7 +1425,13 @@ function updateCart(){
 document.getElementById('couponApplyBtn').addEventListener('click', ()=>{
   const code = document.getElementById('couponInput').value.trim().toUpperCase();
   if(!code){ showToast('اكتب كود الخصم أولاً', 'error'); return; }
-  const match = getCoupons().find(c => c.code.toUpperCase() === code);
+  let match = getCoupons().find(c => c.code.toUpperCase() === code);
+  if(!match){
+    const luckWin = getLuckWin();
+    if(luckWin && !luckWin.used && luckWin.code.toUpperCase() === code){
+      match = {code: luckWin.code, type:'percent', value: luckWin.percent};
+    }
+  }
   if(!match){ showToast('كود الخصم غير صحيح', 'error'); return; }
   appliedCoupon = match;
   document.getElementById('couponInputRow').style.display = 'none';
@@ -1547,6 +1610,12 @@ function resetCheckoutBtn(){
 function finalizeOrder(ref, paymentId){
   const order = buildOrderFromCart(ref, paymentId);
   saveOrder(order);
+  const luckWin = getLuckWin();
+  if(luckWin && !luckWin.used && order.couponCode === luckWin.code){
+    luckWin.used = true;
+    saveLuckWin(luckWin);
+  }
+  saveLuckPlays(getLuckPlays() + 1);
   document.getElementById('orderRef').textContent = 'رقم الطلب — ' + ref;
   document.getElementById('modalOverlay').classList.add('show');
   cart = {};
@@ -1558,7 +1627,7 @@ function finalizeOrder(ref, paymentId){
   sessionStorage.removeItem('delivr_pending_order');
   checkoutBtn.textContent = 'إتمام الدفع عبر ميسر';
   updateCart();
-  showToast('تم استلام طلبك بنجاح ✓', 'success');
+  showToast('تم استلام طلبك بنجاح ✓ وربحت محاولة جديدة في "جرب حظك" 🍀', 'success');
 }
 
 // ===== معالجة الرجوع من صفحة دفع خارجية (مثل STC Pay) عبر رابط الرجوع =====
@@ -1998,6 +2067,123 @@ document.getElementById('adminResetCouponsBtn').addEventListener('click', ()=>{
   renderCouponsAdmin();
 });
 
+// ===== جرب حظك =====
+const LUCK_PRIZES_POOL = [10,10,15,10,20,15,25,10,30,50];
+const LUCK_PLAYS_KEY = 'delivr_luck_plays_v1';
+const LUCK_WIN_KEY = 'delivr_luck_win_v1';
+function getLuckPlays(){
+  try{
+    const raw = localStorage.getItem(LUCK_PLAYS_KEY);
+    if(raw !== null) return Number(raw);
+  }catch(e){}
+  saveLuckPlays(1); // أول زيارة تجي بمحاولة مجانية
+  return 1;
+}
+function saveLuckPlays(n){
+  try{ localStorage.setItem(LUCK_PLAYS_KEY, String(n)); }catch(e){}
+}
+function getLuckWin(){
+  try{
+    const raw = localStorage.getItem(LUCK_WIN_KEY);
+    if(raw) return JSON.parse(raw);
+  }catch(e){}
+  return null;
+}
+function saveLuckWin(win){
+  try{ localStorage.setItem(LUCK_WIN_KEY, JSON.stringify(win)); }catch(e){}
+}
+function shuffleArray(arr){
+  const a = [...arr];
+  for(let i=a.length-1;i>0;i--){
+    const j = Math.floor(Math.random()*(i+1));
+    [a[i],a[j]] = [a[j],a[i]];
+  }
+  return a;
+}
+function luckWinBannerHtml(win){
+  return `
+    <div class="luck-win-banner">
+      <div style="font-size:32px;">🎉</div>
+      <div style="font-weight:700;font-size:16px;margin:8px 0 4px;">مبروك! ربحت خصم ${win.percent}%</div>
+      <div style="color:var(--muted);font-size:12.5px;margin-bottom:14px;">اكتب الكود بخانة "كود الخصم" عند إتمام طلبك</div>
+      <div class="luck-code-box"><span id="luckCodeText">${win.code}</span><button id="luckCopyBtn" type="button">نسخ</button></div>
+    </div>
+  `;
+}
+function wireCopyLuckCode(){
+  const btn = document.getElementById('luckCopyBtn');
+  if(!btn) return;
+  btn.addEventListener('click', ()=>{
+    const code = document.getElementById('luckCodeText').textContent;
+    if(navigator.clipboard && navigator.clipboard.writeText){
+      navigator.clipboard.writeText(code).then(()=> showToast('تم نسخ الكود', 'success'));
+    }
+  });
+}
+function renderLuckScreen(){
+  const plays = getLuckPlays();
+  const win = getLuckWin();
+  const body = document.getElementById('luckBody');
+  if(win && !win.used){
+    body.innerHTML = luckWinBannerHtml(win) + `
+      <div style="text-align:center;margin-top:18px;">
+        <button class="btn-primary" id="luckGoShopBtn" type="button">تصفّح الخدمات وطبّق الكود</button>
+      </div>`;
+    document.getElementById('luckGoShopBtn').addEventListener('click', ()=>{
+      luckOverlay.classList.remove('show');
+      document.getElementById('grid').scrollIntoView({behavior:'smooth'});
+    });
+    wireCopyLuckCode();
+    return;
+  }
+  if(plays <= 0){
+    body.innerHTML = `
+      <div style="text-align:center;padding:30px 10px;">
+        <div style="font-size:40px;margin-bottom:14px;">🎁</div>
+        <div style="font-weight:700;font-size:15px;margin-bottom:8px;">خلصت محاولتك الحالية</div>
+        <div style="color:var(--muted);font-size:13px;line-height:1.7;">أكمل أي طلب وتكسب محاولة جديدة تلقائياً 🍀</div>
+      </div>`;
+    return;
+  }
+  const board = shuffleArray(LUCK_PRIZES_POOL);
+  let revealed = false;
+  body.innerHTML = `
+    <p style="text-align:center;color:var(--muted);font-size:13px;margin:0 0 18px;">عندك محاولة وحدة 🍀 اختر بطاقة وشوف وش نصيبك من الخصم</p>
+    <div class="luck-grid" id="luckGrid">
+      ${board.map((val,i)=>`<button class="luck-card" data-i="${i}" type="button"><span class="luck-card-face">؟</span></button>`).join('')}
+    </div>
+    <div id="luckResultArea"></div>
+  `;
+  document.querySelectorAll('.luck-card').forEach(btn=>{
+    btn.addEventListener('click', ()=>{
+      if(revealed) return;
+      revealed = true;
+      const i = Number(btn.dataset.i);
+      const percent = board[i];
+      document.querySelectorAll('.luck-card').forEach(b=>{ b.disabled = true; b.classList.add('disabled'); });
+      btn.classList.remove('disabled');
+      btn.classList.add('picked');
+      btn.querySelector('.luck-card-face').textContent = percent + '%';
+      const newWin = {code:'LUCKY'+percent, percent, used:false};
+      saveLuckWin(newWin);
+      saveLuckPlays(getLuckPlays() - 1);
+      setTimeout(()=>{
+        document.getElementById('luckResultArea').innerHTML = luckWinBannerHtml(newWin);
+        wireCopyLuckCode();
+        showToast('🎉 مبروك! ربحت خصم ' + percent + '%', 'success');
+      }, 450);
+    });
+  });
+}
+const luckOverlay = document.getElementById('luckOverlay');
+function openLuckScreen(){
+  luckOverlay.classList.add('show');
+  renderLuckScreen();
+}
+document.getElementById('luckCloseBtn').addEventListener('click', ()=>{
+  luckOverlay.classList.remove('show');
+});
+
 document.getElementById('adminAddProductBtn').addEventListener('click', ()=>{
   const products = getProducts();
   const newId = products.length ? Math.max(...products.map(p=>p.id)) + 1 : 1;
@@ -2113,6 +2299,38 @@ renderFilters();
 renderGrid();
 renderReviews();
 updateCart();
+
+// ===== قائمة التنقل السريعة =====
+const navMenuBtn = document.getElementById('navMenuBtn');
+const navMenuPanel = document.getElementById('navMenuPanel');
+navMenuBtn.addEventListener('click', (e)=>{
+  e.stopPropagation();
+  navMenuPanel.classList.toggle('show');
+});
+document.addEventListener('click', (e)=>{
+  if(navMenuPanel.classList.contains('show') && !navMenuPanel.contains(e.target) && e.target!==navMenuBtn){
+    navMenuPanel.classList.remove('show');
+  }
+});
+navMenuPanel.querySelectorAll('a').forEach(link=>{
+  link.addEventListener('click', (e)=>{
+    e.preventDefault();
+    navMenuPanel.classList.remove('show');
+    const action = link.dataset.nav;
+    if(action==='home') window.scrollTo({top:0, behavior:'smooth'});
+    else if(action==='services') document.getElementById('grid').scrollIntoView({behavior:'smooth'});
+    else if(action==='reviews') document.getElementById('reviewsSection').scrollIntoView({behavior:'smooth'});
+    else if(action==='track'){
+      document.getElementById('trackRefInput').value='';
+      document.getElementById('trackResult').innerHTML='';
+      trackOverlay.classList.add('show');
+    }
+    else if(action==='luck') openLuckScreen();
+    else if(action==='about') aboutOverlay.classList.add('show');
+    else if(action==='delivery') deliveryOverlay.classList.add('show');
+    else if(action==='refund') refundOverlay.classList.add('show');
+  });
+});
 </script>
 </body>
 </html>
