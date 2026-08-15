@@ -4,10 +4,6 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>DELIVR — خدمات رقمية</title>
-<!-- مكتبة ميسر لتصميم واجهة الدفع المباشر -->
-<link rel="stylesheet" href="https://cdn.moyasar.com/mp/1.7.3/moyasar.css">
-<script src="https://cdn.moyasar.com/mp/1.7.3/moyasar.min.js"></script>
-
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600;700&family=Tajawal:wght@400;500;700;900&display=swap" rel="stylesheet">
@@ -173,19 +169,6 @@
   }
   .checkout-btn:disabled{background:var(--surface-2);color:var(--muted);}
 
-  /* شاشة نافذة الدفع بميسر داخل المتجر */
-  .moyasar-modal-overlay{
-    position:fixed;inset:0;background:rgba(0,0,0,.7);z-index:90;
-    display:none;align-items:center;justify-content:center;padding:20px;
-  }
-  .moyasar-modal-overlay.show{display:flex;}
-  .moyasar-box{
-    background:var(--surface);border:1px solid var(--line);border-radius:14px;
-    max-width:480px;width:100%;padding:24px;position:relative;
-  }
-  .moyasar-box h3{margin-top:0;font-family:var(--mono);font-size:15px;color:var(--accent);margin-bottom:16px;text-align:center;}
-  .close-moyasar{position:absolute;top:15px;left:15px;background:none;border:none;color:var(--muted);font-size:18px;cursor:pointer;}
-
   .modal-overlay{
     position:fixed;inset:0;background:rgba(0,0,0,.6);z-index:70;
     display:none;align-items:center;justify-content:center;padding:20px;
@@ -201,6 +184,7 @@
   .modal p{color:var(--muted);font-size:13.5px;line-height:1.6;margin:0 0 20px;}
   .modal .order-ref{font-family:var(--mono);color:var(--accent);font-size:13px;}
 
+  /* Service detail modal */
   .detail-modal{
     background:var(--surface);border:1px solid var(--line);border-radius:14px;
     max-width:760px;width:100%;max-height:88vh;display:flex;flex-direction:column;overflow:hidden;
@@ -252,6 +236,27 @@
     padding:13px 26px;font-weight:700;font-size:14px;flex-shrink:0;
   }
 
+  /* نافذة "كيف يتم التسليم؟" */
+  .delivery-modal{
+    background:var(--surface);border:1px solid var(--line);border-radius:14px;
+    max-width:440px;width:100%;padding:26px;position:relative;
+  }
+  .delivery-modal h3{margin:0 0 6px;font-size:18px;}
+  .delivery-modal .sub{color:var(--muted);font-size:13px;margin:0 0 20px;line-height:1.6;}
+  .delivery-modal .dm-close{position:absolute;top:16px;left:16px;background:none;border:none;color:var(--muted);font-size:18px;}
+  .delivery-modal .dm-close:hover{color:var(--text);}
+  .delivery-method{
+    display:flex;gap:14px;align-items:flex-start;padding:14px 0;border-bottom:1px dashed var(--line);
+    text-align:right;
+  }
+  .delivery-method:last-child{border-bottom:none;}
+  .delivery-method .dm-icon{
+    width:40px;height:40px;border-radius:10px;background:var(--accent-dim);color:var(--accent);
+    display:flex;align-items:center;justify-content:center;font-size:19px;flex-shrink:0;
+  }
+  .delivery-method .dm-title{font-weight:700;font-size:14px;margin-bottom:3px;}
+  .delivery-method .dm-desc{color:var(--muted);font-size:12.5px;line-height:1.6;}
+
   footer{border-top:1px solid var(--line);padding:26px 20px;text-align:center;color:var(--muted);font-family:var(--mono);font-size:11.5px;}
 
   @media (max-width:860px){
@@ -283,7 +288,7 @@
     <p>مواقع، متاجر، مشاريع تخرج، وحلول برمجية جاهزة بسعر واضح من البداية. اضغط على أي خدمة لعرض الأساسيات والكماليات، وحدد اللي يناسبك قبل ما تضيفها لطلباتك.</p>
     <div class="hero-cta">
       <a href="#grid" class="btn-primary">تصفّح الخدمات</a>
-      <a href="#" class="btn-ghost">كيف يتم التسليم؟</a>
+      <a href="#" class="btn-ghost" id="deliveryInfoLink">كيف يتم التسليم؟</a>
     </div>
   </div>
   <div class="spec-panel">
@@ -300,7 +305,7 @@
 <div class="filters" id="filters"></div>
 <div class="grid" id="grid"></div>
 
-<footer>DELIVR © 2026 — متجر الخدمات الرقمية المعتمد</footer>
+<footer>DELIVR © 2026 — واجهة تجريبية للعرض فقط، لا يوجد دفع فعلي</footer>
 
 <div class="overlay" id="overlay"></div>
 <div class="drawer" id="drawer">
@@ -310,19 +315,10 @@
   </div>
   <div class="drawer-items" id="drawerItems"></div>
   <div class="drawer-foot">
-    <div class="digital-note">⚡ تسليم رقمي بالكامل — الدفع آمن عبر ميسر</div>
+    <div class="digital-note">⚡ تسليم رقمي بالكامل — لا يوجد شحن</div>
     <div class="sum-row"><span>عدد الخدمات</span><span id="sumCount">0</span></div>
     <div class="sum-total"><span>الإجمالي</span><span id="sumTotal">0 ر.س</span></div>
-    <button class="checkout-btn" id="checkoutBtn" disabled>إتمام الدفع عبر ميسر</button>
-  </div>
-</div>
-
-<!-- نافذة عرض نموذج الدفع لميسر -->
-<div class="moyasar-modal-overlay" id="moyasarModalOverlay">
-  <div class="moyasar-box">
-    <button class="close-moyasar" id="closeMoyasar">✕</button>
-    <h3>إتمام الدفع الآمن (ميسر)</h3>
-    <div id="moyasar-form"></div>
+    <button class="checkout-btn" id="checkoutBtn" disabled>تأكيد الطلب</button>
   </div>
 </div>
 
@@ -363,11 +359,41 @@
   </div>
 </div>
 
+<!-- نافذة "كيف يتم التسليم؟" -->
+<div class="modal-overlay" id="deliveryOverlay">
+  <div class="delivery-modal">
+    <button class="dm-close" id="deliveryClose">✕</button>
+    <h3>كيف يتم التسليم؟</h3>
+    <p class="sub">بعد إتمام الطلب، نسلّم خدمتك رقمياً بإحدى الطرق التالية حسب طبيعة الطلب:</p>
+    <div class="delivery-method">
+      <div class="dm-icon">💬</div>
+      <div>
+        <div class="dm-title">واتساب</div>
+        <div class="dm-desc">نتواصل معك مباشرة عبر واتساب لتسليم الملفات أو تفاصيل الخدمة ومتابعة أي استفسار.</div>
+      </div>
+    </div>
+    <div class="delivery-method">
+      <div class="dm-icon">✉️</div>
+      <div>
+        <div class="dm-title">البريد الإلكتروني</div>
+        <div class="dm-desc">تُرسل الملفات النهائية على البريد الإلكتروني المسجل لديك عند الطلب.</div>
+      </div>
+    </div>
+    <div class="delivery-method">
+      <div class="dm-icon">🔗</div>
+      <div>
+        <div class="dm-title">رابط تحميل</div>
+        <div class="dm-desc">يصلك رابط خاص لتحميل الملفات أو المشروع فور اكتمال الطلب.</div>
+      </div>
+    </div>
+  </div>
+</div>
+
 <div class="modal-overlay" id="modalOverlay">
   <div class="modal">
     <div class="icon">✓</div>
-    <h3>تم الدفع بنجاح!</h3>
-    <p>تم استلام طلبك وعملية الدفع عبر ميسر بنجاح. سيتم التواصل معك لتفاصيل التنفيذ وتسليم العمل.</p>
+    <h3>تم استلام طلبك</h3>
+    <p>هذا عرض تجريبي للواجهة فقط. في المتجر الفعلي، سيتم التواصل معك لتفاصيل التنفيذ وتسليم العمل رقمياً حسب المدة المحددة لكل خدمة.</p>
     <div class="order-ref" id="orderRef">ORDER — #0000</div>
     <br><br>
     <button class="btn-primary" style="width:100%" id="modalClose">إغلاق</button>
@@ -375,7 +401,7 @@
 </div>
 
 <script>
-const SERVICES = [
+const DEFAULT_SERVICES = [
   {id:1, ref:'014', name:'متجر إلكتروني كامل', cat:'مواقع', icon:'🛍️', price:1800, days:'5 أيام', delivery:'رابط + كود المصدر', desc:'متجر متكامل بسلة تسوق وصفحات منتجات، جاهز للربط بالدفع.'},
   {id:2, ref:'027', name:'موقع تعريفي لشركة', cat:'مواقع', icon:'🌐', price:900, days:'3 أيام', delivery:'رابط + كود المصدر', desc:'صفحة أو موقع متعدد الصفحات يعرض خدماتك بشكل احترافي.'},
   {id:3, ref:'041', name:'مشروع تخرج — نظام إدارة', cat:'تخرج', icon:'🎓', price:1500, days:'10 أيام', delivery:'كود + توثيق كامل', desc:'نظام ويب متكامل (Frontend + Backend + قاعدة بيانات) بتوثيق أكاديمي.'},
@@ -387,17 +413,229 @@ const SERVICES = [
   {id:9, ref:'066', name:'هوية بصرية + شعار', cat:'تصميم', icon:'✏️', price:400, days:'3 أيام', delivery:'ملفات مصدر + دليل استخدام', desc:'شعار واحترافي مع لوحة ألوان وخطوط جاهزة للاستخدام.'},
 ];
 
-const SERVICE_DETAILS = {};
-SERVICES.forEach(s => {
-  SERVICE_DETAILS[s.id] = {
-    basics: [{name: s.name, price: s.price}, {name: 'تسليم الملفات الكاملة'}],
-    addons: [{name: 'دعم فني إضافي', price: 100}, {name: 'استشارة تقنية', price: 150}]
-  };
-});
+// تفاصيل كل خدمة: الأساسيات (معلوماتية، ضمن السعر) والكماليات (اختيارية، تُضاف للسعر)
+const DEFAULT_SERVICE_DETAILS = {
+  1: {
+    basics: [
+      {name:'تصميم المتجر', price:500},
+      {name:'ربط الدومين', price:150},
+      {name:'رفع وتشغيل الموقع'},
+      {name:'سلة المشتريات'},
+      {name:'صفحات المنتجات'},
+      {name:'تصنيفات المنتجات'},
+      {name:'توافق الجوال والآيباد'},
+      {name:'صفحة «من نحن»'},
+      {name:'صفحة «تواصل معنا»'},
+      {name:'بوابة الدفع', price:200},
+      {name:'الشروط والأحكام والسياسات الأساسية'},
+    ],
+    addons: [
+      {name:'تصميم شعار', price:100},
+      {name:'هوية بصرية بسيطة', price:150},
+      {name:'ربط واتساب', price:50},
+      {name:'نسخة إنجليزية', price:150},
+      {name:'صفحة إضافية', price:50},
+      {name:'إضافة 20 منتج إضافي', price:50},
+      {name:'تحسين SEO', price:100},
+      {name:'كوبونات وخصومات', price:75},
+      {name:'تقييمات المنتجات', price:75},
+      {name:'إشعارات وتنبيهات', price:100},
+      {name:'صيانة شهرية', price:100, monthly:true},
+      {name:'دعم فني شهري', price:100, monthly:true},
+    ]
+  },
+  2: {
+    basics: [
+      {name:'تصميم موقع تعريفي احترافي', price:500},
+      {name:'ربط الدومين', price:50},
+      {name:'استضافة سنة'},
+      {name:'حتى 6 صفحات'},
+      {name:'تصميم متجاوب للجوال والكمبيوتر'},
+      {name:'نموذج تواصل'},
+      {name:'ربط واتساب'},
+      {name:'ربط خرائط جوجل'},
+      {name:'سرعة وأداء محسن'},
+      {name:'تحسين SEO أساسي', price:100},
+      {name:'تدريب بسيط على إدارة الموقع'},
+      {name:'دعم فني لمدة شهر', price:100, monthly:true},
+      {name:'تعديل بسيط بعد التسليم'},
+    ],
+    addons: [
+      {name:'تصميم شعار احترافي', price:100},
+      {name:'هوية بصرية بسيطة', price:150},
+      {name:'ربط واتساب احترافي', price:50},
+      {name:'نسخة إنجليزية للموقع', price:150},
+      {name:'صفحة إضافية', price:50},
+      {name:'إضافة 20 صورة/محتوى إضافي', price:50},
+      {name:'تحسين SEO متقدم', price:100},
+      {name:'كوبونات وخصومات', price:75},
+      {name:'تقييمات العملاء', price:75},
+      {name:'إشعارات وتنبيهات', price:100},
+      {name:'صيانة شهرية', price:100, monthly:true},
+      {name:'دعم فني شهر', price:100, monthly:true},
+    ]
+  },
+  3: {
+    basics: [
+      {name:'تنفيذ مشروع تخرج متكامل حسب المتطلبات', price:1500},
+      {name:'تحليل فكرة المشروع والمتطلبات'},
+      {name:'تصميم واجهات المشروع'},
+      {name:'برمجة الوظائف الأساسية'},
+      {name:'قاعدة بيانات'},
+      {name:'تصميم متجاوب للجوال والكمبيوتر'},
+      {name:'اختبار المشروع وإصلاح الأخطاء'},
+      {name:'تجهيز المشروع للتشغيل والتسليم'},
+      {name:'شرح طريقة تشغيل المشروع'},
+      {name:'تعديلين بعد التسليم'},
+    ],
+    addons: [
+      {name:'تصميم شعار وهوية بسيطة للمشروع', price:150},
+      {name:'تصميم واجهات احترافية إضافية', price:200},
+      {name:'إضافة نظام تسجيل دخول وحسابات مستخدمين', price:250},
+      {name:'لوحة تحكم للإدارة', price:200},
+      {name:'إضافة لغة ثانية', price:150},
+      {name:'ربط API أو خدمة خارجية', price:150},
+      {name:'استضافة ورفع المشروع', price:200},
+      {name:'توثيق تقني للمشروع', price:150},
+      {name:'تجهيز عرض تقديمي للمشروع', price:150},
+      {name:'فيديو شرح للمشروع', price:100},
+      {name:'دعم فني وصيانه', price:100, monthly:true},
+    ]
+  },
+  6: {
+    basics: [
+      {name:'برمجة لوحة تحكم Admin', price:1100},
+      {name:'تصميم واجهة لوحة التحكم'},
+      {name:'تسجيل دخول المشرف'},
+      {name:'إدارة المستخدمين'},
+      {name:'إضافة وتعديل وحذف البيانات'},
+      {name:'ربط قاعدة البيانات'},
+      {name:'لوحة إحصائيات أساسية'},
+      {name:'صلاحيات الإدارة الأساسية'},
+      {name:'متوافقة مع الجوال والكمبيوتر'},
+    ],
+    addons: [
+      {name:'نظام صلاحيات متقدم', price:200},
+      {name:'تقارير وإحصائيات متقدمة', price:200},
+      {name:'تصدير البيانات PDF / Excel', price:150},
+      {name:'نظام إشعارات', price:200},
+      {name:'سجل العمليات', price:200},
+      {name:'إضافة صفحات للوحة', price:150},
+      {name:'ربط API', price:200},
+      {name:'صيانة ودعم فني', price:100, monthly:true},
+    ]
+  },
+  8: {
+    basics: [
+      {name:'تصميم UX/UI لتطبيق', price:750},
+      {name:'دراسة فكرة التطبيق'},
+      {name:'تصميم تجربة المستخدم UX'},
+      {name:'تصميم واجهات التطبيق UI'},
+      {name:'تصميم حتى 10 شاشات'},
+      {name:'تصميم متناسق واحترافي'},
+      {name:'نموذج تفاعلي Prototype'},
+      {name:'تسليم ملفات التصميم'},
+      {name:'تعديلين على التصميم'},
+    ],
+    addons: [
+      {name:'شاشة إضافية', price:50},
+      {name:'تصميم شعار', price:150},
+      {name:'هوية بصرية بسيطة', price:150},
+      {name:'تصميم Prototype متقدم', price:150},
+      {name:'تصميم الوضع الليلي', price:150},
+      {name:'تصميم نسخة ويب', price:150},
+      {name:'تعديلات إضافية', price:100},
+      {name:'Design System متكامل', price:200},
+    ]
+  },
+  5: {
+    basics: [
+      {name:'إعداد وتنسيق تقرير مشروع تخرج', price:450},
+      {name:'تنسيق التقرير بشكل احترافي'},
+      {name:'صفحة الغلاف'},
+      {name:'فهرس المحتويات'},
+      {name:'ترتيب عناوين وأقسام المشروع'},
+      {name:'تنسيق الجداول والصور'},
+      {name:'إضافة المراجع والمصادر'},
+      {name:'تدقيق وتنسيق الملف'},
+      {name:'تسليم PDF وWord'},
+    ],
+    addons: [
+      {name:'عرض تقديمي للمشروع', price:150},
+      {name:'تصميم مخططات ورسومات', price:100},
+      {name:'تصميم غلاف احترافي', price:150},
+      {name:'ترجمة التقرير للإنجليزية', price:150},
+      {name:'تنسيق إضافي حسب نموذج الجامعة', price:100},
+      {name:'إضافة ملاحق وجداول', price:100},
+      {name:'تعديلات إضافيه', price:100},
+    ]
+  },
+  7: {
+    basics: [
+      {name:'تطوير بوت واتساب', price:650},
+      {name:'إعداد البوت وربطه'},
+      {name:'قائمة خيارات تفاعلية'},
+      {name:'الردود التلقائية'},
+      {name:'رسائل ترحيبية'},
+      {name:'أسئلة وأجوبة شائعة'},
+      {name:'استقبال بيانات العملاء'},
+      {name:'تحويل المحادثة للموظف'},
+      {name:'اختبار البوت'},
+    ],
+    addons: [
+      {name:'ربط قاعدة بيانات', price:150},
+      {name:'ربط CRM', price:200},
+      {name:'ربط API', price:200},
+      {name:'نظام حجز مواعيد', price:150},
+      {name:'إرسال إشعارات', price:150},
+      {name:'ذكاء اصطناعي للردود', price:200},
+      {name:'إضافة لغة ثانية', price:150},
+      {name:'صيانة ودعم فني', price:100, monthly:true},
+    ]
+  },
+  9: {
+    basics: [
+      {name:'تصميم هوية بصرية + شعار', price:400},
+      {name:'تصميم شعار احترافي'},
+      {name:'اختيار الألوان الأساسية'},
+      {name:'اختيار الخطوط المناسبة'},
+      {name:'تحديد نمط الهوية البصرية'},
+      {name:'تطبيق الهوية على نماذج أساسية'},
+      {name:'تسليم الشعار بصيغ متعددة'},
+      {name:'تسليم ملفات الهوية'},
+      {name:'تعديلين على التصميم'},
+    ],
+    addons: [
+      {name:'تصميم بطاقة أعمال', price:100},
+      {name:'تصميم ختم رسمي', price:100},
+      {name:'تصميم ورق مراسلات', price:100},
+      {name:'تصميم ملف تعريفي', price:100},
+      {name:'تصميم قوالب سوشيال ميديا', price:150},
+      {name:'دليل هوية بصرية متكامل', price:150},
+      {name:'تصميم توقيع بريد إلكتروني', price:100},
+      {name:'تصميم أيقونات خاصة بالهوية', price:50},
+      {name:'تعديلات إضافيه', price:100},
+    ]
+  },
+};
+// مشروع التخرج (تطبيق موبايل) يستخدم نفس قائمة مشروع التخرج (نظام إدارة)
+DEFAULT_SERVICE_DETAILS[4] = DEFAULT_SERVICE_DETAILS[3];
+
+// يقرأ بيانات لوحة التحكم (إن وُجدت) من التخزين المحلي، وإلا يستخدم القيم الافتراضية
+const STORAGE_KEY = 'delivr_admin_data';
+let SERVICES = DEFAULT_SERVICES;
+let SERVICE_DETAILS = DEFAULT_SERVICE_DETAILS;
+try{
+  const saved = JSON.parse(localStorage.getItem(STORAGE_KEY) || 'null');
+  if(saved && Array.isArray(saved.services) && saved.details){
+    SERVICES = saved.services;
+    SERVICE_DETAILS = saved.details;
+  }
+}catch(e){ /* تجاهل أي خطأ وتستخدم القيم الافتراضية */ }
 
 const CATS = ['الكل', ...new Set(SERVICES.map(p=>p.cat))];
 let activeCat = 'الكل';
-let cart = {};
+let cart = {}; // { [cartKey]: { id, selectedAddons:[indices] } }
 let cartSeq = 0;
 
 const filtersEl = document.getElementById('filters');
@@ -438,6 +676,7 @@ function renderGrid(){
   });
 }
 
+/* ---------------- Detail modal (basics + add-ons) ---------------- */
 const detailOverlay = document.getElementById('detailOverlay');
 const detailIcon = document.getElementById('detailIcon');
 const detailCat = document.getElementById('detailCat');
@@ -449,11 +688,11 @@ const detailAddons = document.getElementById('detailAddons');
 const detailTotal = document.getElementById('detailTotal');
 const detailAddBtn = document.getElementById('detailAddBtn');
 
-let currentDetail = null;
+let currentDetail = null; // { service, checked:Set }
 
 function openDetail(id){
   const service = SERVICES.find(s=>s.id===id);
-  const details = SERVICE_DETAILS[id];
+  const details = SERVICE_DETAILS[id] || {basics:[], addons:[]};
   currentDetail = { service, details, checked: new Set() };
 
   detailIcon.textContent = service.icon;
@@ -467,15 +706,15 @@ function openDetail(id){
       <span class="b-name">✓ ${b.name}</span>
       <span class="b-price ${b.price?'paid':''}">${b.price ? b.price + ' ر.س' : 'ضمن السعر'}</span>
     </div>
-  `).join('');
+  `).join('') || '<div class="basic-row"><span class="b-name">لا توجد تفاصيل إضافية</span></div>';
 
   detailAddons.innerHTML = details.addons.map((a,i) => `
     <label class="addon-row" data-i="${i}">
       <input type="checkbox" data-i="${i}">
       <span class="a-name">${a.name}</span>
-      <span class="a-price">${a.price} ر.س</span>
+      <span class="a-price">${a.price} ر.س${a.monthly?'/شهر':''}</span>
     </label>
-  `).join('');
+  `).join('') || '<div class="basic-row"><span class="b-name">لا توجد إضافات لهذه الخدمة</span></div>';
 
   detailAddons.querySelectorAll('input[type="checkbox"]').forEach(cb=>{
     cb.addEventListener('change', ()=>{
@@ -518,6 +757,7 @@ detailAddBtn.addEventListener('click', ()=>{
   overlay.classList.add('show');
 });
 
+/* ---------------- Cart drawer ---------------- */
 const drawer = document.getElementById('drawer');
 const overlay = document.getElementById('overlay');
 const drawerItems = document.getElementById('drawerItems');
@@ -528,7 +768,7 @@ const checkoutBtn = document.getElementById('checkoutBtn');
 
 function cartItemTotal(entry){
   const service = SERVICES.find(s=>s.id===entry.id);
-  const details = SERVICE_DETAILS[entry.id];
+  const details = SERVICE_DETAILS[entry.id] || {addons:[]};
   let total = service.price;
   entry.selectedAddons.forEach(i => total += details.addons[i].price);
   return total;
@@ -550,7 +790,7 @@ function updateCart(){
   drawerItems.innerHTML = keys.map(key=>{
     const entry = cart[key];
     const service = SERVICES.find(s=>s.id===entry.id);
-    const details = SERVICE_DETAILS[entry.id];
+    const details = SERVICE_DETAILS[entry.id] || {addons:[]};
     const itemTotal = cartItemTotal(entry);
     grandTotal += itemTotal;
     const addonsHtml = entry.selectedAddons.length
@@ -593,53 +833,27 @@ function closeDrawer(){
   overlay.classList.remove('show');
 }
 
-// تشغيل كود ميسر الحقيقي عند النقر على إتمام الدفع
-const moyasarModalOverlay = document.getElementById('moyasarModalOverlay');
-document.getElementById('closeMoyasar').addEventListener('click', ()=>{
-  moyasarModalOverlay.classList.remove('show');
+// نافذة "كيف يتم التسليم؟"
+const deliveryOverlay = document.getElementById('deliveryOverlay');
+document.getElementById('deliveryInfoLink').addEventListener('click', (e)=>{
+  e.preventDefault();
+  deliveryOverlay.classList.add('show');
+});
+document.getElementById('deliveryClose').addEventListener('click', ()=>{
+  deliveryOverlay.classList.remove('show');
 });
 
-checkoutBtn.addEventListener('click', ()=>{
-  let grandTotal = 0;
-  Object.keys(cart).forEach(key => {
-    grandTotal += cartItemTotal(cart[key]);
-  });
-
-  closeDrawer();
-  moyasarModalOverlay.classList.add('show');
-  
-  // تصفية حاوية نموذج ميسر قبل الإنشاء لتجنب التكرار
-  document.getElementById('moyasar-form').innerHTML = '';
-
-  // تفعيل نموذج ميسر (Moyasar Form) بالمفتاح الحقيقي الفعلي
-  Moyasar.init({
-    element: '#moyasar-form',
-    amount: grandTotal * 100, // المبلغ بالهللات
-    currency: 'SAR',
-    description: 'شراء خدمات رقمية من متجر DELIVR',
-    publishable_api_key: 'pk_live_KrEnd6JB4rPZ1uPif6US6xFLFTDEyHaARai8FtVA',
-    callback_url: window.location.href,
-    methods: ['creditcard', 'applepay', 'stcpay'],
-    on_completed: function (payment) {
-      if (payment.status === 'paid') {
-        moyasarModalOverlay.classList.remove('show');
-        const ref = 'ORDER — #' + Math.floor(1000+Math.random()*9000);
-        document.getElementById('orderRef').textContent = ref;
-        document.getElementById('modalOverlay').classList.add('show');
-        cart = {};
-        updateCart();
-      } else {
-        alert('فشلت عملية الدفع، الحالة: ' + payment.status);
-      }
-    },
-    on_failed: function (error) {
-      alert('حدث خطأ أثناء معالجة الدفع: ' + (error.message || 'خطأ غير معروف'));
-    }
-  });
+const modalOverlay = document.getElementById('modalOverlay');
+document.getElementById('checkoutBtn').addEventListener('click', ()=>{
+  const ref = 'ORDER — #' + Math.floor(1000+Math.random()*9000);
+  document.getElementById('orderRef').textContent = ref;
+  modalOverlay.classList.add('show');
 });
-
 document.getElementById('modalClose').addEventListener('click', ()=>{
-  document.getElementById('modalOverlay').classList.remove('show');
+  modalOverlay.classList.remove('show');
+  cart = {};
+  updateCart();
+  closeDrawer();
 });
 
 renderFilters();
