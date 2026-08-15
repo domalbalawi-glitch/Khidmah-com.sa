@@ -1,3 +1,4 @@
+
 <!DOCTYPE html>
 <html lang="ar" dir="rtl">
 <head>
@@ -736,7 +737,9 @@
 
 <body>
 
-<button class="admin-gear" id="adminLinkBtn" title="لوحة التحكم" aria-label="لوحة التحكم">⚙️</button>
+<!-- أيقونة لوحة التحكم مخفية عن الزوار — تُفتح بـ 5 ضغطات على الشعار أو #admin أو Ctrl+Shift+A.
+     لو تبيها ظاهرة مرة ثانية، احذف style="display:none" من السطر التالي -->
+<button class="admin-gear" id="adminLinkBtn" style="display:none" title="لوحة التحكم" aria-label="لوحة التحكم">⚙️</button>
 
 <header class="topbar">
   <div class="topbar-inner">
@@ -1307,7 +1310,7 @@
       <label for="adminPass">كلمة المرور</label>
       <input type="password" id="adminPass" placeholder="••••••••">
     </div>
-    <div class="err" id="adminErr">كلمة المرور غير صحيحة</div>
+    <div class="err" id="adminErr">كلمة المرور غير صحيحة — تأكد من الأحرف الكبيرة والصغيرة والرموز</div>
     <br>
     <button class="btn-primary" style="width:100%" id="adminLoginBtn">دخول</button>
   </div>
@@ -2387,14 +2390,36 @@ const adminScreen = document.getElementById('adminScreen');
 const adminPass = document.getElementById('adminPass');
 const adminErr = document.getElementById('adminErr');
 
-document.getElementById('adminLinkBtn').addEventListener('click', ()=>{
+/* ═══ فتح لوحة التحكم بطرق سرية (الأيقونة مخفية عن الزوار) ═══
+   1) اضغط على شعار "خِدمه" 5 ضغطات متتالية خلال 3 ثواني
+   2) افتح الرابط وحط بنهايته  #admin
+   3) على الكمبيوتر: Ctrl + Shift + A                              */
+function openAdminLogin(){
   adminPass.value=''; adminErr.classList.remove('show'); adminLoginOverlay.classList.add('show');
+}
+document.getElementById('adminLinkBtn').addEventListener('click', openAdminLogin);
+
+let logoTaps = 0, logoTapTimer = null;
+document.querySelector('.logo').addEventListener('click', ()=>{
+  logoTaps++;
+  clearTimeout(logoTapTimer);
+  logoTapTimer = setTimeout(()=>{ logoTaps = 0; }, 3000);
+  if(logoTaps >= 5){ logoTaps = 0; openAdminLogin(); }
+});
+if(window.location.hash === '#admin'){
+  openAdminLogin();
+  history.replaceState({}, document.title, window.location.pathname);
+}
+document.addEventListener('keydown', e=>{
+  if((e.ctrlKey || e.metaKey) && e.shiftKey && (e.key === 'A' || e.key === 'a')){
+    e.preventDefault(); openAdminLogin();
+  }
 });
 adminLoginOverlay.addEventListener('click', e=>{ if(e.target===adminLoginOverlay) adminLoginOverlay.classList.remove('show'); });
 document.getElementById('adminLoginBtn').addEventListener('click', tryAdminLogin);
 adminPass.addEventListener('keydown', e=>{ if(e.key==='Enter') tryAdminLogin(); });
 function tryAdminLogin(){
-  if(adminPass.value === ADMIN_PASSWORD){ adminLoginOverlay.classList.remove('show'); openAdmin(); }
+  if(adminPass.value.trim() === ADMIN_PASSWORD.trim()){ adminLoginOverlay.classList.remove('show'); openAdmin(); }
   else adminErr.classList.add('show');
 }
 document.getElementById('adminExitBtn').addEventListener('click', ()=>{
