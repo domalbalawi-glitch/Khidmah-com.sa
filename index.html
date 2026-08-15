@@ -11,7 +11,7 @@
 <meta property="og:title" content="DELIVR — خدمات رقمية">
 <meta property="og:description" content="مواقع، متاجر إلكترونية، مشاريع تخرج، وحلول برمجية جاهزة بأسعار واضحة وتسليم رقمي كامل.">
 <meta name="twitter:card" content="summary">
-<link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><rect width=%22100%22 height=%22100%22 rx=%2222%22 fill=%22%23121417%22/><circle cx=%2250%22 cy=%2250%22 r=%2216%22 fill=%22%233DDC97%22/></svg>">
+<link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><rect width=%22100%22 height=%22100%22 rx=%2222%22 fill=%22%23121417%22/><text x=%2250%22 y=%2270%22 font-family=%22monospace%22 font-weight=%22700%22 font-size=%2258%22 fill=%22%233DDC97%22 text-anchor=%22middle%22>D</text></svg>">
 <!-- مكتبة ميسر لتصميم واجهة الدفع المباشر -->
 <link rel="stylesheet" href="https://cdn.moyasar.com/mp/1.7.3/moyasar.css">
 <script src="https://cdn.moyasar.com/mp/1.7.3/moyasar.min.js"></script>
@@ -52,6 +52,11 @@
   }
   .logo{font-family:var(--mono);font-weight:700;font-size:19px;letter-spacing:2px;display:flex;align-items:center;gap:8px;}
   .logo .dot{width:8px;height:8px;background:var(--accent);border-radius:50%;display:inline-block;}
+  .logo-mark{display:flex;align-items:center;filter:drop-shadow(0 0 4px rgba(61,220,151,.35));animation:logoPulse 3s ease-in-out infinite;}
+  @keyframes logoPulse{
+    0%,100%{filter:drop-shadow(0 0 4px rgba(61,220,151,.35));}
+    50%{filter:drop-shadow(0 0 11px rgba(61,220,151,.7));}
+  }
   .cart-btn{
     display:flex;align-items:center;gap:8px;background:var(--surface);
     border:1px solid var(--line);border-radius:999px;padding:8px 16px;
@@ -426,6 +431,7 @@
   @media (prefers-reduced-motion: reduce){
     html{scroll-behavior:auto;}
     .scan-line{animation:none;}
+    .logo-mark{animation:none;}
   }
   button:focus-visible, a:focus-visible, input:focus-visible, textarea:focus-visible{
     outline:2px solid var(--accent);outline-offset:2px;
@@ -623,14 +629,32 @@
   <a href="#" data-nav="reviews">⭐ التقييمات</a>
   <a href="#" data-nav="track">📦 تتبع طلباتي</a>
   <a href="#" data-nav="luck">🍀 جرب حظك</a>
+  <a href="#" data-nav="suggest">💡 اقتراحك يهمنا</a>
   <a href="#" data-nav="about">ℹ️ من نحن</a>
   <a href="#" data-nav="delivery">🚚 كيف يتم التسليم</a>
   <a href="#" data-nav="refund">↩️ سياسة الاسترجاع</a>
+  <a href="#" data-nav="privacy">🔒 سياسة الخصوصية</a>
 </div>
 
 <header class="topbar">
   <div class="topbar-inner">
-    <div class="logo"><span class="dot"></span>DELIVR</div>
+    <div class="logo">
+      <span class="logo-mark">
+        <svg width="34" height="34" viewBox="0 0 40 40" xmlns="http://www.w3.org/2000/svg">
+          <defs>
+            <linearGradient id="logoGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+              <stop offset="0%" stop-color="#6EF5C2"/>
+              <stop offset="100%" stop-color="#1FA76B"/>
+            </linearGradient>
+          </defs>
+          <rect x="1.5" y="1.5" width="37" height="37" rx="11" fill="#173328"/>
+          <rect x="1.5" y="1.5" width="37" height="37" rx="11" fill="none" stroke="url(#logoGrad)" stroke-width="1.4"/>
+          <text x="20" y="27" font-family="'IBM Plex Mono', monospace" font-weight="700" font-size="18" fill="url(#logoGrad)" text-anchor="middle">D</text>
+          <circle cx="30" cy="11" r="2.6" fill="url(#logoGrad)"/>
+        </svg>
+      </span>
+      DELIVR
+    </div>
     <button class="cart-btn" id="cartToggle">
       🛒 طلباتي <span class="cart-count" id="cartCount">0</span>
     </button>
@@ -701,6 +725,8 @@
     <a href="#" id="aboutInfoBtn">من نحن</a>
     <span>·</span>
     <a href="#" id="refundInfoBtn">سياسة الاسترجاع والإلغاء</a>
+    <span>·</span>
+    <a href="#" id="privacyInfoBtn">سياسة الخصوصية</a>
   </div>
   <div>DELIVR ©️ 2026 — متجر الخدمات الرقمية المعتمد</div>
 </footer>
@@ -943,6 +969,53 @@
   </div>
 </div>
 
+<!-- نافذة سياسة الخصوصية -->
+<div class="modal-overlay" id="privacyOverlay">
+  <div class="delivery-modal">
+    <div class="delivery-head">
+      <h3>سياسة الخصوصية</h3>
+      <button class="detail-close" id="privacyClose">✕</button>
+    </div>
+    <div class="delivery-body">
+      <div class="delivery-step">
+        <div class="delivery-step-num">1</div>
+        <div>
+          <div class="delivery-step-title">البيانات اللي نجمعها</div>
+          <div class="delivery-step-desc">الاسم، رقم الجوال، والبريد الإلكتروني (اختياري) — فقط لغرض تنفيذ طلبك والتواصل معك.</div>
+        </div>
+      </div>
+      <div class="delivery-step">
+        <div class="delivery-step-num">2</div>
+        <div>
+          <div class="delivery-step-title">كيف نستخدمها</div>
+          <div class="delivery-step-desc">للتواصل بخصوص طلبك وتسليمه ودعمك الفني فقط. ما نستخدم بياناتك لأي غرض تسويقي بدون إذنك.</div>
+        </div>
+      </div>
+      <div class="delivery-step">
+        <div class="delivery-step-num">3</div>
+        <div>
+          <div class="delivery-step-title">المشاركة مع أطراف أخرى</div>
+          <div class="delivery-step-desc">ما نبيع ولا نشارك بياناتك مع أي طرف ثالث، إلا بالقدر اللازم لإتمام الدفع عبر بوابة ميسر المرخّصة.</div>
+        </div>
+      </div>
+      <div class="delivery-step">
+        <div class="delivery-step-num">4</div>
+        <div>
+          <div class="delivery-step-title">أمان الدفع</div>
+          <div class="delivery-step-desc">الدفع يتم بالكامل عبر ميسر، وما نشوف ولا نخزّن بيانات بطاقتك عندنا نهائياً.</div>
+        </div>
+      </div>
+      <div class="delivery-step">
+        <div class="delivery-step-num">5</div>
+        <div>
+          <div class="delivery-step-title">حقك بحذف بياناتك</div>
+          <div class="delivery-step-desc">تقدر تطلب حذف بياناتك في أي وقت بالتواصل معنا عبر واتساب.</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
 <div class="modal-overlay" id="modalOverlay">
   <div class="modal">
     <div class="icon">✓</div>
@@ -981,6 +1054,8 @@
       <button class="admin-tab-btn" data-tab="products">المنتجات</button>
       <button class="admin-tab-btn" data-tab="reviews">التقييمات</button>
       <button class="admin-tab-btn" data-tab="coupons">الكوبونات</button>
+      <button class="admin-tab-btn" data-tab="luck">جرب حظك</button>
+      <button class="admin-tab-btn" data-tab="suggestions">الاقتراحات</button>
     </div>
     <button class="admin-exit" id="adminExitBtn">خروج</button>
   </div>
@@ -1036,6 +1111,45 @@
       </div>
       <div id="couponsAdminList"></div>
     </div>
+
+    <div class="admin-pane" id="paneLuck">
+      <div class="admin-toolbar">
+        <div style="color:var(--muted);font-family:var(--mono);font-size:12px;">تحكم بجوائز وإعدادات لعبة "جرب حظك"</div>
+        <button class="admin-reset-btn" id="adminResetLuckBtn">استعادة الافتراضي</button>
+      </div>
+      <div class="product-edit-card">
+        <div class="pe-grid" style="grid-template-columns:1fr 1fr;">
+          <div class="field">
+            <label>تفعيل الميزة</label>
+            <select id="luckEnabledSelect">
+              <option value="1">مفعّلة</option>
+              <option value="0">معطّلة</option>
+            </select>
+          </div>
+          <div class="field">
+            <label>محاولات أول زيارة مجانية</label>
+            <input type="number" id="luckInitialPlaysInput" min="0" max="5">
+          </div>
+        </div>
+        <div class="pe-addons-title"><span>🎁 قائمة الجوائز (نسبة الخصم %)</span><button class="pe-addon-add" id="adminAddPrizeBtn" type="button">+ إضافة</button></div>
+        <div id="luckPrizesList"></div>
+        <div class="pe-actions">
+          <button class="admin-reset-btn" id="adminResetMyPlaysBtn" type="button">🔄 صفّر محاولتي (للتجربة)</button>
+          <div style="display:flex;align-items:center;gap:12px;">
+            <span class="pe-saved-flag" id="luckSettingsSavedFlag">✓ تم الحفظ</span>
+            <button class="pe-save" id="luckSettingsSaveBtn" type="button">حفظ الإعدادات</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="admin-pane" id="paneSuggestions">
+      <div class="admin-toolbar">
+        <div style="color:var(--muted);font-family:var(--mono);font-size:12px;">اقتراحات وملاحظات وصلت من زوار الموقع</div>
+        <button class="admin-clear-btn" id="adminClearSuggestionsBtn">مسح كل الاقتراحات</button>
+      </div>
+      <div id="suggestionsAdminList"></div>
+    </div>
   </div>
 </div>
 
@@ -1045,6 +1159,27 @@
     <button class="admin-exit" id="luckCloseBtn">إغلاق</button>
   </div>
   <div class="luck-body" id="luckBody"></div>
+</div>
+
+<div class="luck-screen" id="suggestOverlay">
+  <div class="luck-top">
+    <h2>💡 اقتراحك يهمنا</h2>
+    <button class="admin-exit" id="suggestCloseBtn">إغلاق</button>
+  </div>
+  <div class="luck-body">
+    <p style="color:var(--muted);font-size:13px;line-height:1.7;margin:0 0 18px;">رأيك يهمنا فعلاً — أي اقتراح أو ملاحظة تحب تشاركنا فيها توصلنا مباشرة.</p>
+    <div id="suggestFormArea">
+      <div class="field">
+        <label for="suggestText">اقتراحك</label>
+        <textarea id="suggestText" placeholder="اكتب اقتراحك هنا..." style="min-height:140px;resize:vertical;"></textarea>
+      </div>
+      <button class="btn-primary" id="suggestSendBtn" style="width:100%;margin-top:6px;" type="button">إرسال الاقتراح</button>
+    </div>
+    <div id="suggestConfirm" style="display:none;text-align:center;padding:40px 10px;">
+      <div style="font-size:40px;margin-bottom:14px;">🙏</div>
+      <div style="font-weight:700;font-size:15px;">وصلنا اقتراحك، شاكرين لك!</div>
+    </div>
+  </div>
 </div>
 
 <script>
@@ -1339,6 +1474,11 @@ function getDiscountAmount(subtotal){
 function isValidSaudiPhone(v){
   return /^(05\d{8}|9665\d{8}|\+9665\d{8})$/.test(v.trim());
 }
+function phoneToWhatsappLink(phone){
+  let digits = String(phone).replace(/\D/g,'');
+  if(digits.startsWith('0')) digits = '966' + digits.slice(1);
+  return 'https://wa.me/' + digits;
+}
 function isValidEmail(v){
   if(!v.trim()) return true; // اختياري
   return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(v.trim());
@@ -1486,6 +1626,33 @@ document.getElementById('refundInfoBtn').addEventListener('click', (e)=>{
 });
 document.getElementById('refundClose').addEventListener('click', ()=>{
   refundOverlay.classList.remove('show');
+});
+
+const privacyOverlay = document.getElementById('privacyOverlay');
+document.getElementById('privacyInfoBtn').addEventListener('click', (e)=>{
+  e.preventDefault();
+  privacyOverlay.classList.add('show');
+});
+document.getElementById('privacyClose').addEventListener('click', ()=>{
+  privacyOverlay.classList.remove('show');
+});
+
+const suggestOverlay = document.getElementById('suggestOverlay');
+document.getElementById('suggestCloseBtn').addEventListener('click', ()=>{
+  suggestOverlay.classList.remove('show');
+  document.getElementById('suggestFormArea').style.display = '';
+  document.getElementById('suggestConfirm').style.display = 'none';
+});
+document.getElementById('suggestSendBtn').addEventListener('click', ()=>{
+  const text = document.getElementById('suggestText').value.trim();
+  if(!text){ showToast('اكتب اقتراحك أولاً', 'error'); return; }
+  const suggestions = getSuggestions();
+  suggestions.unshift({id: Date.now(), text, date: new Date().toISOString()});
+  saveSuggestions(suggestions);
+  document.getElementById('suggestFormArea').style.display = 'none';
+  document.getElementById('suggestConfirm').style.display = 'block';
+  document.getElementById('suggestText').value = '';
+  showToast('تم إرسال اقتراحك، شكراً لك ✓', 'success');
 });
 
 // ===== تخزين الطلبات محلياً (localStorage) =====
@@ -1699,7 +1866,7 @@ document.getElementById('adminExitBtn').addEventListener('click', ()=>{
 });
 
 // تبديل تبويبات لوحة التحكم
-const ADMIN_TAB_PANES = {orders:'paneOrders', products:'paneProducts', reviews:'paneReviews', coupons:'paneCoupons'};
+const ADMIN_TAB_PANES = {orders:'paneOrders', products:'paneProducts', reviews:'paneReviews', coupons:'paneCoupons', luck:'paneLuck', suggestions:'paneSuggestions'};
 document.querySelectorAll('.admin-tab-btn').forEach(btn=>{
   btn.addEventListener('click', ()=>{
     document.querySelectorAll('.admin-tab-btn').forEach(b=>b.classList.remove('active'));
@@ -1709,6 +1876,8 @@ document.querySelectorAll('.admin-tab-btn').forEach(btn=>{
     if(btn.dataset.tab==='products') renderProductsAdmin();
     if(btn.dataset.tab==='reviews') renderReviewsAdmin();
     if(btn.dataset.tab==='coupons') renderCouponsAdmin();
+    if(btn.dataset.tab==='luck') renderLuckAdmin();
+    if(btn.dataset.tab==='suggestions') renderSuggestionsAdmin();
   });
 });
 
@@ -1810,6 +1979,7 @@ function renderAdminOrders(){
           <span>👤 ${o.customer.name}</span>
           <span>📞 ${o.customer.phone}</span>
           ${o.customer.email ? `<span>✉️ ${o.customer.email}</span>` : ''}
+          <a href="${phoneToWhatsappLink(o.customer.phone)}" target="_blank" rel="noopener" style="color:#25D366;font-family:var(--mono);font-size:11px;">💬 واتساب</a>
         </div>
         <div class="order-items">
           ${itemsHtml}
@@ -2068,7 +2238,19 @@ document.getElementById('adminResetCouponsBtn').addEventListener('click', ()=>{
 });
 
 // ===== جرب حظك =====
-const LUCK_PRIZES_POOL = [10,10,15,10,20,15,25,10,30,50];
+const DEFAULT_LUCK_SETTINGS = { enabled:true, initialPlays:1, prizes:[10,10,15,10,20,15,25,10,30,50] };
+const LUCK_SETTINGS_KEY = 'delivr_luck_settings_v1';
+function getLuckSettings(){
+  try{
+    const raw = localStorage.getItem(LUCK_SETTINGS_KEY);
+    if(raw) return JSON.parse(raw);
+  }catch(e){}
+  saveLuckSettings(DEFAULT_LUCK_SETTINGS);
+  return JSON.parse(JSON.stringify(DEFAULT_LUCK_SETTINGS));
+}
+function saveLuckSettings(s){
+  try{ localStorage.setItem(LUCK_SETTINGS_KEY, JSON.stringify(s)); }catch(e){}
+}
 const LUCK_PLAYS_KEY = 'delivr_luck_plays_v1';
 const LUCK_WIN_KEY = 'delivr_luck_win_v1';
 function getLuckPlays(){
@@ -2076,8 +2258,9 @@ function getLuckPlays(){
     const raw = localStorage.getItem(LUCK_PLAYS_KEY);
     if(raw !== null) return Number(raw);
   }catch(e){}
-  saveLuckPlays(1); // أول زيارة تجي بمحاولة مجانية
-  return 1;
+  const initial = getLuckSettings().initialPlays;
+  saveLuckPlays(initial);
+  return initial;
 }
 function saveLuckPlays(n){
   try{ localStorage.setItem(LUCK_PLAYS_KEY, String(n)); }catch(e){}
@@ -2145,7 +2328,7 @@ function renderLuckScreen(){
       </div>`;
     return;
   }
-  const board = shuffleArray(LUCK_PRIZES_POOL);
+  const board = shuffleArray(getLuckSettings().prizes);
   let revealed = false;
   body.innerHTML = `
     <p style="text-align:center;color:var(--muted);font-size:13px;margin:0 0 18px;">عندك محاولة وحدة 🍀 اختر بطاقة وشوف وش نصيبك من الخصم</p>
@@ -2182,6 +2365,92 @@ function openLuckScreen(){
 }
 document.getElementById('luckCloseBtn').addEventListener('click', ()=>{
   luckOverlay.classList.remove('show');
+});
+
+function renderLuckPrizesList(){
+  const settings = getLuckSettings();
+  const list = document.getElementById('luckPrizesList');
+  list.innerHTML = settings.prizes.map((p)=>`
+    <div class="pe-addon-row">
+      <input type="number" class="luck-prize-input" min="1" max="100" value="${p}" style="max-width:110px;">
+      <span style="color:var(--muted);font-family:var(--mono);font-size:12px;">%</span>
+      <button class="pe-addon-remove" type="button">حذف</button>
+    </div>
+  `).join('');
+  document.querySelectorAll('#luckPrizesList .pe-addon-remove').forEach(btn=>{
+    btn.onclick = ()=>{ btn.closest('.pe-addon-row').remove(); };
+  });
+}
+function renderLuckAdmin(){
+  const settings = getLuckSettings();
+  document.getElementById('luckEnabledSelect').value = settings.enabled ? '1' : '0';
+  document.getElementById('luckInitialPlaysInput').value = settings.initialPlays;
+  renderLuckPrizesList();
+}
+function applyLuckNavVisibility(){
+  const link = document.querySelector('.nav-menu-panel a[data-nav="luck"]');
+  if(link) link.style.display = getLuckSettings().enabled ? 'flex' : 'none';
+}
+document.getElementById('adminAddPrizeBtn').addEventListener('click', ()=>{
+  document.getElementById('luckPrizesList').insertAdjacentHTML('beforeend', `
+    <div class="pe-addon-row"><input type="number" class="luck-prize-input" min="1" max="100" value="10" style="max-width:110px;"><span style="color:var(--muted);font-family:var(--mono);font-size:12px;">%</span><button class="pe-addon-remove" type="button">حذف</button></div>
+  `);
+  document.querySelectorAll('#luckPrizesList .pe-addon-remove').forEach(btn=>{
+    btn.onclick = ()=>{ btn.closest('.pe-addon-row').remove(); };
+  });
+});
+document.getElementById('luckSettingsSaveBtn').addEventListener('click', ()=>{
+  const settings = getLuckSettings();
+  settings.enabled = document.getElementById('luckEnabledSelect').value === '1';
+  settings.initialPlays = Math.max(0, Number(document.getElementById('luckInitialPlaysInput').value) || 0);
+  let prizes = [...document.querySelectorAll('.luck-prize-input')].map(inp => Math.max(1, Number(inp.value) || 1));
+  if(prizes.length === 0) prizes = [10];
+  settings.prizes = prizes;
+  saveLuckSettings(settings);
+  applyLuckNavVisibility();
+  const flag = document.getElementById('luckSettingsSavedFlag');
+  flag.classList.add('show');
+  setTimeout(()=>flag.classList.remove('show'), 1800);
+  showToast('تم حفظ إعدادات جرب حظك', 'success');
+});
+document.getElementById('adminResetLuckBtn').addEventListener('click', ()=>{
+  if(!confirm('هذا راح يمسح إعداداتك ويرجع الجوائز للإعدادات الافتراضية. متأكد؟')) return;
+  saveLuckSettings(DEFAULT_LUCK_SETTINGS);
+  renderLuckAdmin();
+  applyLuckNavVisibility();
+});
+document.getElementById('adminResetMyPlaysBtn').addEventListener('click', ()=>{
+  saveLuckPlays(getLuckSettings().initialPlays);
+  localStorage.removeItem(LUCK_WIN_KEY);
+  showToast('تم تصفير محاولتك — جرب اللعبة من جديد', 'success');
+});
+
+// ===== الاقتراحات =====
+const SUGGESTIONS_KEY = 'delivr_suggestions_v1';
+function getSuggestions(){
+  try{ return JSON.parse(localStorage.getItem(SUGGESTIONS_KEY)) || []; }catch(e){ return []; }
+}
+function saveSuggestions(list){
+  localStorage.setItem(SUGGESTIONS_KEY, JSON.stringify(list));
+}
+function renderSuggestionsAdmin(){
+  const suggestions = getSuggestions();
+  const list = document.getElementById('suggestionsAdminList');
+  if(suggestions.length===0){
+    list.innerHTML = `<div class="orders-empty">ما وصل اقتراحات بعد.</div>`;
+    return;
+  }
+  list.innerHTML = suggestions.map(s=>`
+    <div class="order-card">
+      <div class="order-date" style="margin-bottom:8px;">${new Date(s.date).toLocaleString('ar-SA')}</div>
+      <div style="font-size:13.5px;line-height:1.7;">${escHtml(s.text)}</div>
+    </div>
+  `).join('');
+}
+document.getElementById('adminClearSuggestionsBtn').addEventListener('click', ()=>{
+  if(!confirm('متأكد إنك تبي تمسح كل الاقتراحات؟')) return;
+  saveSuggestions([]);
+  renderSuggestionsAdmin();
 });
 
 document.getElementById('adminAddProductBtn').addEventListener('click', ()=>{
@@ -2326,11 +2595,14 @@ navMenuPanel.querySelectorAll('a').forEach(link=>{
       trackOverlay.classList.add('show');
     }
     else if(action==='luck') openLuckScreen();
+    else if(action==='suggest') suggestOverlay.classList.add('show');
     else if(action==='about') aboutOverlay.classList.add('show');
     else if(action==='delivery') deliveryOverlay.classList.add('show');
     else if(action==='refund') refundOverlay.classList.add('show');
+    else if(action==='privacy') privacyOverlay.classList.add('show');
   });
 });
+applyLuckNavVisibility();
 </script>
 </body>
 </html>
