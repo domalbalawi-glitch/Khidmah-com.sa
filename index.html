@@ -5,6 +5,8 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>DELIVR — خدمات رقمية</title>
+<meta name="description" content="DELIVR — مواقع، متاجر إلكترونية، مشاريع تخرج، وحلول برمجية جاهزة بأسعار واضحة وتسليم رقمي كامل.">
+<link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><rect width=%22100%22 height=%22100%22 rx=%2222%22 fill=%22%23121417%22/><circle cx=%2250%22 cy=%2250%22 r=%2216%22 fill=%22%233DDC97%22/></svg>">
 <!-- مكتبة ميسر لتصميم واجهة الدفع المباشر -->
 <link rel="stylesheet" href="https://cdn.moyasar.com/mp/1.7.3/moyasar.css">
 <script src="https://cdn.moyasar.com/mp/1.7.3/moyasar.min.js"></script>
@@ -81,6 +83,8 @@
     border-radius:8px;padding:13px 24px;font-weight:700;font-size:14px;
   }
   .btn-ghost:hover{border-color:var(--muted);}
+  .support-btn{border-color:#25D366;color:#25D366;}
+  .support-btn:hover{background:rgba(37,211,102,.08);}
 
   .spec-panel{
     background:var(--surface);border:1px solid var(--line);border-radius:14px;
@@ -400,6 +404,100 @@
   .pe-saved-flag{font-family:var(--mono);font-size:11px;color:var(--accent);opacity:0;transition:opacity .3s;}
   .pe-saved-flag.show{opacity:1;}
 
+  html{scroll-behavior:smooth;}
+  @media (prefers-reduced-motion: reduce){
+    html{scroll-behavior:auto;}
+    .scan-line{animation:none;}
+  }
+  button:focus-visible, a:focus-visible, input:focus-visible, textarea:focus-visible{
+    outline:2px solid var(--accent);outline-offset:2px;
+  }
+
+  /* شريط الثقة */
+  .trust-bar{
+    max-width:1180px;margin:0 auto;padding:0 20px 40px;
+    display:grid;grid-template-columns:repeat(4,1fr);gap:14px;
+  }
+  .trust-item{
+    background:var(--surface);border:1px solid var(--line);border-radius:12px;
+    padding:16px;display:flex;align-items:center;gap:12px;
+  }
+  .trust-item .ic{font-size:20px;}
+  .trust-item .t{font-weight:700;font-size:13px;}
+  .trust-item .s{color:var(--muted);font-size:11.5px;font-family:var(--mono);margin-top:2px;}
+
+  /* البحث والترتيب */
+  .toolbar-row{
+    max-width:1180px;margin:0 auto;padding:0 20px 18px;
+    display:flex;gap:12px;flex-wrap:wrap;align-items:center;justify-content:space-between;
+  }
+  .search-box{
+    flex:1;min-width:220px;display:flex;align-items:center;gap:8px;
+    background:var(--surface);border:1px solid var(--line);border-radius:10px;padding:10px 14px;
+  }
+  .search-box input{
+    flex:1;background:none;border:none;outline:none;color:var(--text);font-family:var(--sans);font-size:13.5px;
+  }
+  .search-box input::placeholder{color:var(--muted);}
+  .sort-select{
+    background:var(--surface);border:1px solid var(--line);border-radius:10px;color:var(--text);
+    padding:10px 14px;font-family:var(--mono);font-size:12.5px;outline:none;
+  }
+  .sort-select:focus{border-color:var(--accent);}
+  .track-order-btn{
+    background:var(--surface);border:1px solid var(--line);color:var(--muted);border-radius:10px;
+    padding:10px 16px;font-family:var(--mono);font-size:12px;white-space:nowrap;
+  }
+  .track-order-btn:hover{border-color:var(--accent);color:var(--accent);}
+  .no-results{grid-column:1/-1;text-align:center;color:var(--muted);font-family:var(--mono);padding:40px 0;}
+
+  /* أزرار عائمة */
+  .float-stack{position:fixed;bottom:22px;left:22px;z-index:45;display:flex;flex-direction:column;gap:12px;}
+  .float-btn{
+    width:52px;height:52px;border-radius:50%;display:flex;align-items:center;justify-content:center;
+    font-size:22px;border:1px solid var(--line);box-shadow:0 6px 18px rgba(0,0,0,.35);
+    opacity:0;pointer-events:none;transform:translateY(8px);transition:opacity .2s, transform .2s;
+  }
+  .float-btn.show{opacity:1;pointer-events:auto;transform:translateY(0);}
+  .whatsapp-btn{background:#25D366;color:#0b1f13;border-color:#25D366;opacity:1;pointer-events:auto;transform:none;}
+  .top-btn{background:var(--surface);color:var(--accent);}
+  .top-btn:hover{border-color:var(--accent);}
+
+  /* توست إشعارات */
+  .toast-stack{position:fixed;top:16px;left:50%;transform:translateX(-50%);z-index:150;display:flex;flex-direction:column;gap:8px;width:min(92vw,380px);}
+  .toast{
+    background:var(--surface);border:1px solid var(--line);border-radius:10px;padding:12px 16px;
+    font-family:var(--mono);font-size:12.5px;display:flex;align-items:center;gap:10px;
+    box-shadow:0 8px 24px rgba(0,0,0,.4);opacity:0;transform:translateY(-10px);transition:opacity .25s, transform .25s;
+  }
+  .toast.show{opacity:1;transform:translateY(0);}
+  .toast.success{border-color:var(--accent);color:var(--accent);}
+  .toast.error{border-color:var(--danger);color:var(--danger);}
+
+  /* الأسئلة الشائعة */
+  .faq{max-width:820px;margin:0 auto;padding:20px 20px 70px;}
+  .faq-title{font-family:var(--mono);color:var(--accent);font-size:12px;letter-spacing:3px;text-transform:uppercase;margin-bottom:8px;text-align:center;}
+  .faq h2{text-align:center;margin:0 0 30px;font-size:26px;}
+  .faq-item{border:1px solid var(--line);border-radius:10px;margin-bottom:10px;background:var(--surface);overflow:hidden;}
+  .faq-q{
+    width:100%;text-align:right;background:none;border:none;color:var(--text);
+    padding:16px 18px;font-weight:700;font-size:14px;display:flex;justify-content:space-between;align-items:center;gap:10px;
+  }
+  .faq-q .chevron{color:var(--accent);font-family:var(--mono);transition:transform .2s;flex-shrink:0;}
+  .faq-item.open .chevron{transform:rotate(45deg);}
+  .faq-a{max-height:0;overflow:hidden;transition:max-height .25s ease;}
+  .faq-a p{margin:0;padding:0 18px 16px;color:var(--muted);font-size:13px;line-height:1.7;}
+
+  /* تتبع الطلب */
+  .track-modal{background:var(--surface);border:1px solid var(--line);border-radius:14px;max-width:440px;width:100%;padding:26px;}
+  .track-modal h3{margin:0 0 14px;font-size:16px;}
+  .track-result{margin-top:16px;}
+  .track-empty{color:var(--muted);font-size:12.5px;font-family:var(--mono);text-align:center;padding:14px 0;}
+  .track-status-badge{
+    display:inline-block;font-family:var(--mono);font-size:11.5px;padding:4px 10px;border-radius:999px;
+    background:var(--accent-dim);color:var(--accent);border:1px solid var(--line);
+  }
+
   @media (max-width:860px){
     .hero{grid-template-columns:1fr;padding-top:40px;}
     .hero h1{font-size:30px;}
@@ -407,16 +505,18 @@
     .detail-body{grid-template-columns:1fr;}
     .admin-stats{grid-template-columns:repeat(2,1fr);}
     .pe-grid{grid-template-columns:1fr 1fr;}
+    .trust-bar{grid-template-columns:repeat(2,1fr);}
   }
   @media (max-width:520px){
     .grid{grid-template-columns:1fr;}
     .pe-grid{grid-template-columns:1fr;}
+    .trust-bar{grid-template-columns:1fr;}
   }
 </style>
 </head>
 <body>
 
-<button class="admin-gear" id="adminLinkBtn" title="لوحة التحكم">⚙️</button>
+<button class="admin-gear" id="adminLinkBtn" title="لوحة التحكم" aria-label="لوحة التحكم">⚙️</button>
 
 <header class="topbar">
   <div class="topbar-inner">
@@ -435,6 +535,7 @@
     <div class="hero-cta">
       <a href="#grid" class="btn-primary">تصفّح الخدمات</a>
       <a href="#" class="btn-ghost" id="deliveryInfoBtn">كيف يتم التسليم؟</a>
+      <a href="#" class="btn-ghost support-btn" id="supportWhatsappBtn" target="_blank" rel="noopener">💬 الدعم الفني</a>
     </div>
   </div>
   <div class="spec-panel">
@@ -448,10 +549,60 @@
   </div>
 </section>
 
+<div class="trust-bar">
+  <div class="trust-item"><span class="ic">🔒</span><div><div class="t">دفع آمن عبر ميسر</div><div class="s">بطاقات، Apple Pay، STC Pay</div></div></div>
+  <div class="trust-item"><span class="ic">⚡</span><div><div class="t">تسليم رقمي كامل</div><div class="s">رابط أو ملفات مباشرة</div></div></div>
+  <div class="trust-item"><span class="ic">🔁</span><div><div class="t">جولتا تعديل مجاناً</div><div class="s">على كل خدمة</div></div></div>
+  <div class="trust-item"><span class="ic">🛠️</span><div><div class="t">دعم فني 14 يوم</div><div class="s">بعد التسليم النهائي</div></div></div>
+</div>
+
+<div class="toolbar-row">
+  <div class="search-box">
+    <span>🔎</span>
+    <input type="text" id="searchInput" placeholder="ابحث عن خدمة... (مثال: متجر، تخرج، بوت)">
+  </div>
+  <select class="sort-select" id="sortSelect">
+    <option value="default">الترتيب الافتراضي</option>
+    <option value="price-asc">السعر: من الأقل للأعلى</option>
+    <option value="price-desc">السعر: من الأعلى للأقل</option>
+    <option value="name">الاسم: أبجدياً</option>
+  </select>
+  <button class="track-order-btn" id="trackOrderBtn">📦 تتبع طلبي</button>
+</div>
+
 <div class="filters" id="filters"></div>
 <div class="grid" id="grid"></div>
 
+<div class="faq">
+  <div class="faq-title">الأسئلة الشائعة</div>
+  <h2>عندك سؤال؟ غالباً جوابه هنا</h2>
+  <div id="faqList"></div>
+</div>
+
 <footer>DELIVR ©️ 2026 — متجر الخدمات الرقمية المعتمد</footer>
+
+<div class="toast-stack" id="toastStack"></div>
+
+<div class="float-stack">
+  <a class="float-btn whatsapp-btn" id="whatsappBtn" href="#" target="_blank" rel="noopener" title="تواصل عبر واتساب" aria-label="تواصل عبر واتساب">💬</a>
+  <button class="float-btn top-btn" id="topBtn" title="العودة للأعلى" aria-label="العودة للأعلى">↑</button>
+</div>
+
+<!-- نافذة تتبع الطلب -->
+<div class="modal-overlay" id="trackOverlay">
+  <div class="track-modal">
+    <h3>📦 تتبع طلبي</h3>
+    <div class="warn-box">⚠️ التتبع يعرض فقط الطلبات المسجّلة على هذا المتصفح/الجهاز.</div>
+    <div class="field">
+      <label for="trackRefInput">رقم الطلب أو رقم الجوال المستخدم بالطلب</label>
+      <input type="text" id="trackRefInput" placeholder="مثال: ORDER-123456 أو 05xxxxxxxx">
+    </div>
+    <button class="btn-primary" style="width:100%" id="trackSearchBtn">بحث</button>
+    <div class="track-result" id="trackResult"></div>
+    <br>
+    <button class="btn-ghost" style="width:100%" id="trackCloseBtn">إغلاق</button>
+  </div>
+</div>
 
 <div class="overlay" id="overlay"></div>
 <div class="drawer" id="drawer">
@@ -586,6 +737,7 @@
     <p>تم استلام طلبك وعملية الدفع عبر ميسر بنجاح. سيتم التواصل معك على الرقم أو البريد المسجل لتفاصيل التنفيذ وتسليم العمل.</p>
     <div class="order-ref" id="orderRef">ORDER — #0000</div>
     <br><br>
+    <button class="btn-ghost" style="width:100%;margin-bottom:10px;" id="copyOrderRefBtn">نسخ رقم الطلب</button>
     <button class="btn-primary" style="width:100%" id="modalClose">إغلاق</button>
   </div>
 </div>
@@ -681,9 +833,25 @@ function getProductById(id){
 let activeCat = 'الكل';
 let cart = {};
 let cartSeq = 0;
+let searchTerm = '';
+let sortMode = 'default';
 
 const filtersEl = document.getElementById('filters');
 const gridEl = document.getElementById('grid');
+
+// ===== توست إشعارات (بديل alert) =====
+function showToast(message, type){
+  const stack = document.getElementById('toastStack');
+  const el = document.createElement('div');
+  el.className = 'toast ' + (type || '');
+  el.textContent = message;
+  stack.appendChild(el);
+  requestAnimationFrame(()=> el.classList.add('show'));
+  setTimeout(()=>{
+    el.classList.remove('show');
+    setTimeout(()=> el.remove(), 300);
+  }, 4200);
+}
 
 function renderFilters(){
   const products = getProducts();
@@ -703,9 +871,23 @@ function renderFilters(){
 
 function renderGrid(){
   const products = getProducts();
-  const items = activeCat==='الكل' ? products : products.filter(p=>p.cat===activeCat);
+  let items = activeCat==='الكل' ? products : products.filter(p=>p.cat===activeCat);
+
+  if(searchTerm){
+    const q = searchTerm.trim().toLowerCase();
+    items = items.filter(p =>
+      p.name.toLowerCase().includes(q) ||
+      p.desc.toLowerCase().includes(q) ||
+      p.cat.toLowerCase().includes(q)
+    );
+  }
+
+  if(sortMode==='price-asc') items = [...items].sort((a,b)=>a.price-b.price);
+  else if(sortMode==='price-desc') items = [...items].sort((a,b)=>b.price-a.price);
+  else if(sortMode==='name') items = [...items].sort((a,b)=>a.name.localeCompare(b.name,'ar'));
+
   if(items.length===0){
-    gridEl.innerHTML = `<div style="grid-column:1/-1;text-align:center;color:var(--muted);font-family:var(--mono);padding:40px 0;">لا توجد خدمات في هذا التصنيف حالياً.</div>`;
+    gridEl.innerHTML = `<div class="no-results">لا توجد خدمات مطابقة لبحثك. جرّب كلمة أخرى أو امسح البحث.</div>`;
     return;
   }
   gridEl.innerHTML = items.map(p => `
@@ -964,10 +1146,17 @@ function saveOrder(order){
 const moyasarModalOverlay = document.getElementById('moyasarModalOverlay');
 document.getElementById('closeMoyasar').addEventListener('click', ()=>{
   moyasarModalOverlay.classList.remove('show');
+  resetCheckoutBtn();
 });
 
 checkoutBtn.addEventListener('click', ()=>{
   if(!customerFormValid()) return;
+  if(typeof Moyasar === 'undefined'){
+    showToast('تعذّر تحميل بوابة الدفع، تحقق من اتصالك بالإنترنت وحاول مرة أخرى.', 'error');
+    return;
+  }
+  checkoutBtn.textContent = 'جاري تجهيز الدفع...';
+  checkoutBtn.disabled = true;
   let grandTotal = 0;
   Object.keys(cart).forEach(key => {
     grandTotal += cartItemTotal(cart[key]);
@@ -1001,14 +1190,21 @@ checkoutBtn.addEventListener('click', ()=>{
         moyasarModalOverlay.classList.remove('show');
         finalizeOrder(pendingRef, payment.id);
       } else {
-        alert('فشلت عملية الدفع، الحالة: ' + payment.status);
+        showToast('فشلت عملية الدفع، الحالة: ' + payment.status, 'error');
       }
+      resetCheckoutBtn();
     },
     on_failed: function (error) {
-      alert('حدث خطأ أثناء معالجة الدفع: ' + (error.message || 'خطأ غير معروف'));
+      showToast('حدث خطأ أثناء معالجة الدفع: ' + (error.message || 'خطأ غير معروف'), 'error');
+      resetCheckoutBtn();
     }
   });
 });
+
+function resetCheckoutBtn(){
+  checkoutBtn.textContent = 'إتمام الدفع عبر ميسر';
+  refreshCheckoutState();
+}
 
 function finalizeOrder(ref, paymentId){
   const order = buildOrderFromCart(ref, paymentId);
@@ -1018,7 +1214,9 @@ function finalizeOrder(ref, paymentId){
   cart = {};
   custName.value=''; custPhone.value=''; custEmail.value='';
   sessionStorage.removeItem('delivr_pending_order');
+  checkoutBtn.textContent = 'إتمام الدفع عبر ميسر';
   updateCart();
+  showToast('تم استلام طلبك بنجاح ✓', 'success');
 }
 
 // ===== معالجة الرجوع من صفحة دفع خارجية (مثل STC Pay) عبر رابط الرجوع =====
@@ -1039,7 +1237,7 @@ function finalizeOrder(ref, paymentId){
     finalizeOrder(ref || pending.ref, paymentId || '');
   } else if(status && status !== 'paid'){
     sessionStorage.removeItem('delivr_pending_order');
-    alert('لم تكتمل عملية الدفع (الحالة: ' + status + '). حاول مرة أخرى من سلة الطلبات.');
+    showToast('لم تكتمل عملية الدفع (الحالة: ' + status + '). حاول مرة أخرى من سلة الطلبات.', 'error');
   }
   // تنظيف رابط الصفحة من معاملات الدفع
   window.history.replaceState({}, document.title, window.location.pathname + window.location.hash);
@@ -1047,6 +1245,12 @@ function finalizeOrder(ref, paymentId){
 
 document.getElementById('modalClose').addEventListener('click', ()=>{
   document.getElementById('modalOverlay').classList.remove('show');
+});
+document.getElementById('copyOrderRefBtn').addEventListener('click', ()=>{
+  const refText = document.getElementById('orderRef').textContent;
+  if(navigator.clipboard && navigator.clipboard.writeText){
+    navigator.clipboard.writeText(refText).then(()=> showToast('تم نسخ رقم الطلب', 'success'));
+  }
 });
 
 // ===== لوحة التحكم (Admin) =====
@@ -1292,6 +1496,100 @@ document.getElementById('adminResetProductsBtn').addEventListener('click', ()=>{
   if(!confirm('هذا راح يمسح كل تعديلاتك ويرجع القائمة للإعدادات الافتراضية. متأكد؟')) return;
   saveProducts(DEFAULT_PRODUCTS);
   renderProductsAdmin();
+});
+
+// ===== البحث والترتيب =====
+document.getElementById('searchInput').addEventListener('input', (e)=>{
+  searchTerm = e.target.value;
+  renderGrid();
+});
+document.getElementById('sortSelect').addEventListener('change', (e)=>{
+  sortMode = e.target.value;
+  renderGrid();
+});
+
+// ===== الأسئلة الشائعة =====
+const FAQ_ITEMS = [
+  {q:'كم مدة التسليم؟', a:'كل خدمة توضح مدة التسليم الخاصة فيها في صفحة تفاصيلها، وغالباً تتراوح بين 3 و12 يوم عمل حسب نوع المشروع.'},
+  {q:'هل الدفع آمن؟', a:'الدفع يتم بالكامل عبر بوابة ميسر المرخّصة، وتقدر تدفع ببطاقتك، Apple Pay، أو STC Pay دون تخزين بيانات بطاقتك عندنا.'},
+  {q:'كم عدد التعديلات المسموحة؟', a:'كل خدمة تشمل جولتين تعديل مجانيتين بعد التسليم الأول، وأي تعديلات إضافية تناقش حسب حجمها.'},
+  {q:'ماذا لو احتجت دعم بعد التسليم؟', a:'تحصل على 14 يوم دعم فني مجاني بعد التسليم النهائي لأي استفسار أو مشكلة تقنية بسيطة.'},
+  {q:'كيف أتابع حالة طلبي؟', a:'استخدم زر "تتبع طلبي" أعلى الصفحة وأدخل رقم الطلب أو رقم الجوال المستخدم عند الشراء.'},
+];
+function renderFaq(){
+  const el = document.getElementById('faqList');
+  el.innerHTML = FAQ_ITEMS.map((f,i)=>`
+    <div class="faq-item" data-i="${i}">
+      <button class="faq-q" type="button">${f.q}<span class="chevron">+</span></button>
+      <div class="faq-a"><p>${f.a}</p></div>
+    </div>
+  `).join('');
+  el.querySelectorAll('.faq-item').forEach(item=>{
+    const btn = item.querySelector('.faq-q');
+    const body = item.querySelector('.faq-a');
+    btn.addEventListener('click', ()=>{
+      const isOpen = item.classList.contains('open');
+      el.querySelectorAll('.faq-item').forEach(i=>{
+        i.classList.remove('open');
+        i.querySelector('.faq-a').style.maxHeight = null;
+      });
+      if(!isOpen){
+        item.classList.add('open');
+        body.style.maxHeight = body.scrollHeight + 'px';
+      }
+    });
+  });
+}
+renderFaq();
+
+// ===== زر واتساب وزر العودة للأعلى =====
+const WHATSAPP_NUMBER = '966579598983';
+const WHATSAPP_LINK = 'https://wa.me/' + WHATSAPP_NUMBER + '?text=' + encodeURIComponent('مرحباً، أبي أستفسر عن خدماتكم في DELIVR');
+document.getElementById('whatsappBtn').href = WHATSAPP_LINK;
+const heroSupportBtn = document.getElementById('supportWhatsappBtn');
+if(heroSupportBtn) heroSupportBtn.href = WHATSAPP_LINK;
+
+const topBtn = document.getElementById('topBtn');
+window.addEventListener('scroll', ()=>{
+  topBtn.classList.toggle('show', window.scrollY > 500);
+});
+topBtn.addEventListener('click', ()=> window.scrollTo({top:0, behavior:'smooth'}));
+
+// ===== تتبع الطلب =====
+const trackOverlay = document.getElementById('trackOverlay');
+document.getElementById('trackOrderBtn').addEventListener('click', ()=>{
+  document.getElementById('trackRefInput').value='';
+  document.getElementById('trackResult').innerHTML='';
+  trackOverlay.classList.add('show');
+});
+document.getElementById('trackCloseBtn').addEventListener('click', ()=> trackOverlay.classList.remove('show'));
+trackOverlay.addEventListener('click', (e)=>{ if(e.target===trackOverlay) trackOverlay.classList.remove('show'); });
+
+document.getElementById('trackSearchBtn').addEventListener('click', ()=>{
+  const q = document.getElementById('trackRefInput').value.trim().toLowerCase();
+  const resultEl = document.getElementById('trackResult');
+  if(!q){ resultEl.innerHTML = `<div class="track-empty">أدخل رقم الطلب أو رقم الجوال أولاً.</div>`; return; }
+  const orders = getOrders();
+  const matches = orders.filter(o => o.ref.toLowerCase().includes(q) || o.customer.phone.replace(/\s/g,'').includes(q.replace(/\s/g,'')));
+  if(matches.length===0){
+    resultEl.innerHTML = `<div class="track-empty">ما لقينا طلب مطابق على هذا المتصفح. ملاحظة: تتبع الطلب يعمل فقط من نفس الجهاز/المتصفح اللي تم الطلب منه.</div>`;
+    return;
+  }
+  resultEl.innerHTML = matches.map(o=>{
+    const d = new Date(o.date);
+    return `
+      <div class="order-card" style="margin-bottom:10px;">
+        <div class="order-card-top">
+          <div>
+            <div class="order-ref-id">${o.ref}</div>
+            <div class="order-date">${d.toLocaleString('ar-SA')}</div>
+          </div>
+          <span class="track-status-badge">${o.status}</span>
+        </div>
+        <div class="order-total-row"><span>الإجمالي</span><span>${o.total} ر.س</span></div>
+      </div>
+    `;
+  }).join('');
 });
 
 renderFilters();
