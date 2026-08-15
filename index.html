@@ -593,7 +593,7 @@ function closeDrawer(){
   overlay.classList.remove('show');
 }
 
-// تشغيل كود ميسر عند النقر على إتمام الدفع
+// تشغيل كود ميسر الحقيقي عند النقر على إتمام الدفع
 const moyasarModalOverlay = document.getElementById('moyasarModalOverlay');
 document.getElementById('closeMoyasar').addEventListener('click', ()=>{
   moyasarModalOverlay.classList.remove('show');
@@ -611,13 +611,13 @@ checkoutBtn.addEventListener('click', ()=>{
   // تصفية حاوية نموذج ميسر قبل الإنشاء لتجنب التكرار
   document.getElementById('moyasar-form').innerHTML = '';
 
-  // تفعيل نموذج ميسر (Moyasar Form) مباشرة باستخدام المفتاح التجريبي الخاص بك
+  // تفعيل نموذج ميسر (Moyasar Form) بالمفتاح الحقيقي الفعلي
   Moyasar.init({
     element: '#moyasar-form',
-    amount: grandTotal * 100, // المبلغ بالهللات (مثال: 100 ريال = 10000)
+    amount: grandTotal * 100, // المبلغ بالهللات
     currency: 'SAR',
     description: 'شراء خدمات رقمية من متجر DELIVR',
-    publishable_api_key: 'pk_test_PxvtLhPB9YNXHekBuEMtkFpYShMWmS5RT8dRh5tX',
+    publishable_api_key: 'pk_live_KrEnd6JB4rPZ1uPif6US6xFLFTDEyHaARai8FtVA',
     callback_url: window.location.href,
     methods: ['creditcard', 'applepay', 'stcpay'],
     on_completed: function (payment) {
