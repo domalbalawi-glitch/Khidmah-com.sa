@@ -525,6 +525,26 @@
   .review-comment{color:var(--muted);font-size:13px;line-height:1.7;flex:1;}
   .review-meta{font-family:var(--mono);font-size:10.5px;color:var(--accent);}
 
+  /* كوبونات الخصم */
+  .coupon-edit-card{background:var(--surface);border:1px solid var(--line);border-radius:12px;padding:18px 20px;margin-bottom:14px;}
+  .coupon-box{margin-bottom:14px;}
+  .coupon-row{display:flex;gap:8px;}
+  .coupon-row input{flex:1;background:var(--surface);border:1px solid var(--line);border-radius:8px;padding:10px 12px;color:var(--text);font-family:var(--mono);font-size:12.5px;outline:none;}
+  .coupon-row input:focus{border-color:var(--accent);}
+  .coupon-apply-btn{background:var(--surface-2);border:1px solid var(--line);color:var(--text);border-radius:8px;padding:10px 16px;font-family:var(--mono);font-size:12px;font-weight:700;white-space:nowrap;}
+  .coupon-apply-btn:hover{border-color:var(--accent);color:var(--accent);}
+  .coupon-applied{display:flex;justify-content:space-between;align-items:center;gap:10px;background:var(--accent-dim);border:1px solid var(--line);border-radius:8px;padding:9px 12px;font-family:var(--mono);font-size:12px;color:var(--accent);}
+  .coupon-applied button{background:none;border:none;color:var(--muted);font-size:11px;text-decoration:underline;flex-shrink:0;}
+  .coupon-applied button:hover{color:var(--danger);}
+  .sum-row.discount{color:var(--accent);}
+  .price-clarity-note{font-family:var(--mono);font-size:10.5px;color:var(--muted);margin-bottom:10px;display:flex;align-items:center;gap:6px;}
+
+  /* روابط الفوتر */
+  .footer-links{display:flex;gap:10px;justify-content:center;align-items:center;margin-bottom:10px;flex-wrap:wrap;font-family:var(--mono);font-size:11.5px;}
+  .footer-links a{color:var(--muted);}
+  .footer-links a:hover{color:var(--accent);}
+  .footer-links span{color:var(--line);}
+
   /* تتبع الطلب */
   .track-modal{background:var(--surface);border:1px solid var(--line);border-radius:14px;max-width:440px;width:100%;padding:26px;}
   .track-modal h3{margin:0 0 14px;font-size:16px;}
@@ -627,7 +647,14 @@
   <div id="faqList"></div>
 </div>
 
-<footer>DELIVR ©️ 2026 — متجر الخدمات الرقمية المعتمد</footer>
+<footer>
+  <div class="footer-links">
+    <a href="#" id="aboutInfoBtn">من نحن</a>
+    <span>·</span>
+    <a href="#" id="refundInfoBtn">سياسة الاسترجاع والإلغاء</a>
+  </div>
+  <div>DELIVR ©️ 2026 — متجر الخدمات الرقمية المعتمد</div>
+</footer>
 
 <div class="toast-stack" id="toastStack"></div>
 
@@ -677,8 +704,20 @@
         <div class="field-hint" id="custEmailHint">صيغة البريد الإلكتروني غير صحيحة</div>
       </div>
     </div>
+    <div class="coupon-box" id="couponBox">
+      <div class="coupon-row" id="couponInputRow">
+        <input type="text" id="couponInput" placeholder="كود الخصم (إن وجد)">
+        <button class="coupon-apply-btn" id="couponApplyBtn" type="button">تطبيق</button>
+      </div>
+      <div class="coupon-applied" id="couponApplied" style="display:none;">
+        <span id="couponAppliedText"></span>
+        <button id="couponRemoveBtn" type="button">إزالة</button>
+      </div>
+    </div>
     <div class="digital-note">⚡ تسليم رقمي بالكامل — الدفع آمن عبر ميسر</div>
+    <div class="price-clarity-note">✅ السعر يشمل كل شي، بدون أي رسوم أو ضريبة إضافية عند الدفع</div>
     <div class="sum-row"><span>عدد الخدمات</span><span id="sumCount">0</span></div>
+    <div class="sum-row discount" id="discountRow" style="display:none"><span>الخصم (<span id="discountCode"></span>)</span><span id="discountAmount">0 ر.س</span></div>
     <div class="sum-total"><span>الإجمالي</span><span id="sumTotal">0 ر.س</span></div>
     <button class="checkout-btn" id="checkoutBtn" disabled>إتمام الدفع عبر ميسر</button>
   </div>
@@ -778,6 +817,83 @@
   </div>
 </div>
 
+<!-- نافذة من نحن -->
+<div class="modal-overlay" id="aboutOverlay">
+  <div class="delivery-modal">
+    <div class="delivery-head">
+      <h3>من نحن</h3>
+      <button class="detail-close" id="aboutClose">✕</button>
+    </div>
+    <div class="delivery-body">
+      <p style="color:var(--muted);font-size:13.5px;line-height:1.85;margin:0 0 20px;">DELIVR مو مجرد منصة خدمات رقمية، إحنا فريق من الشباب السعودي جمعنا شغفنا بالتقنية عشان نساعد أصحاب الأفكار والطلاب وأصحاب المشاريع الصغيرة يوصلون لحلول احترافية بدون تعقيد، وبدون انتظار أسابيع للرد.</p>
+      <p style="color:var(--muted);font-size:13.5px;line-height:1.85;margin:0 0 20px;">هدفنا واضح: نبني لك مشروع يمثلك بجودة توازي الشركات الكبيرة، بسعر وسرعة تناسب طموحك. كل خدمة نسلمها تمر بنفس الحرص اللي نتمناه لو كنا نحن العملاء.</p>
+      <div class="delivery-step">
+        <div class="delivery-step-num">🎯</div>
+        <div>
+          <div class="delivery-step-title">وضوح من أول يوم</div>
+          <div class="delivery-step-desc">سعر ومدة تسليم واضحين قبل ما تدفع ريال واحد، بدون مفاجآت.</div>
+        </div>
+      </div>
+      <div class="delivery-step">
+        <div class="delivery-step-num">⚡</div>
+        <div>
+          <div class="delivery-step-title">سرعة بدون تنازل عن الجودة</div>
+          <div class="delivery-step-desc">نلتزم بالمواعيد لأننا نعرف إن وقتك يهمك بنفس القدر اللي يهمنا.</div>
+        </div>
+      </div>
+      <div class="delivery-step">
+        <div class="delivery-step-num">🤝</div>
+        <div>
+          <div class="delivery-step-title">دعم حقيقي بعد التسليم</div>
+          <div class="delivery-step-desc">علاقتنا معك ما تنتهي بالدفع، نبقى معك لين توصل لشكل نهائي يرضيك.</div>
+        </div>
+      </div>
+      <div class="delivery-note-box">🚀 إحنا شباب سعوديين هادفين للنجاح، وكل مشروع نسلمه هو خطوة نحو هدفنا إننا نكون الخيار الأول لأي فكرة تبي تشوفها حقيقة.</div>
+    </div>
+  </div>
+</div>
+
+<!-- نافذة سياسة الاسترجاع -->
+<div class="modal-overlay" id="refundOverlay">
+  <div class="delivery-modal">
+    <div class="delivery-head">
+      <h3>سياسة الاسترجاع والإلغاء</h3>
+      <button class="detail-close" id="refundClose">✕</button>
+    </div>
+    <div class="delivery-body">
+      <div class="delivery-step">
+        <div class="delivery-step-num">1</div>
+        <div>
+          <div class="delivery-step-title">قبل بدء التنفيذ</div>
+          <div class="delivery-step-desc">إذا طلبت إلغاء الطلب قبل ما نبدأ الشغل فعلياً، نرجع لك كامل المبلغ المدفوع.</div>
+        </div>
+      </div>
+      <div class="delivery-step">
+        <div class="delivery-step-num">2</div>
+        <div>
+          <div class="delivery-step-title">أثناء التنفيذ</div>
+          <div class="delivery-step-desc">إذا بدأنا الشغل فعلياً، نتواصل معك ونتفق على استرجاع جزئي حسب نسبة الإنجاز المكتمل.</div>
+        </div>
+      </div>
+      <div class="delivery-step">
+        <div class="delivery-step-num">3</div>
+        <div>
+          <div class="delivery-step-title">بعد التسليم النهائي</div>
+          <div class="delivery-step-desc">كل خدمة تشمل جولتين تعديل مجانيتين، بالإضافة لـ14 يوم دعم فني. الاسترجاع الكامل ما يكون متاح بعد استلام الملفات النهائية، لكن نضمن حل أي مشكلة تقنية خلال فترة الضمان.</div>
+        </div>
+      </div>
+      <div class="delivery-step">
+        <div class="delivery-step-num">4</div>
+        <div>
+          <div class="delivery-step-title">كيف تطلب استرجاع أو إلغاء</div>
+          <div class="delivery-step-desc">تواصل معنا عبر واتساب مع رقم طلبك، ونرد عليك ونرتب الإجراء المناسب خلال ساعات عمل.</div>
+        </div>
+      </div>
+      <div class="delivery-note-box">💬 هدفنا رضاك، فإذا صار أي إشكال ما تتردد تكلمنا قبل لا تطلب استرجاع — غالباً نقدر نحله بسرعة.</div>
+    </div>
+  </div>
+</div>
+
 <div class="modal-overlay" id="modalOverlay">
   <div class="modal">
     <div class="icon">✓</div>
@@ -815,6 +931,7 @@
       <button class="admin-tab-btn active" data-tab="orders">الطلبات</button>
       <button class="admin-tab-btn" data-tab="products">المنتجات</button>
       <button class="admin-tab-btn" data-tab="reviews">التقييمات</button>
+      <button class="admin-tab-btn" data-tab="coupons">الكوبونات</button>
     </div>
     <button class="admin-exit" id="adminExitBtn">خروج</button>
   </div>
@@ -858,6 +975,17 @@
         </div>
       </div>
       <div id="reviewsAdminList"></div>
+    </div>
+
+    <div class="admin-pane" id="paneCoupons">
+      <div class="admin-toolbar">
+        <div style="color:var(--muted);font-family:var(--mono);font-size:12px;">أنشئ أكواد خصم لعملائك — نسبة مئوية أو مبلغ ثابت</div>
+        <div style="display:flex;gap:10px;">
+          <button class="admin-reset-btn" id="adminResetCouponsBtn">استعادة الافتراضي</button>
+          <button class="admin-add-btn" id="adminAddCouponBtn">+ إضافة كوبون</button>
+        </div>
+      </div>
+      <div id="couponsAdminList"></div>
     </div>
   </div>
 </div>
@@ -943,8 +1071,26 @@ function renderReviews(){
   `).join('');
 }
 
+// ===== كوبونات الخصم =====
+const DEFAULT_COUPONS = [
+  {id:1, code:'WELCOME10', type:'percent', value:10},
+];
+const COUPONS_KEY = 'delivr_coupons_v1';
+function getCoupons(){
+  try{
+    const raw = localStorage.getItem(COUPONS_KEY);
+    if(raw) return JSON.parse(raw);
+  }catch(e){}
+  saveCoupons(DEFAULT_COUPONS);
+  return JSON.parse(JSON.stringify(DEFAULT_COUPONS));
+}
+function saveCoupons(list){
+  localStorage.setItem(COUPONS_KEY, JSON.stringify(list));
+}
+
 let activeCat = 'الكل';
 let cart = {};
+let appliedCoupon = null;
 let cartSeq = 0;
 let searchTerm = '';
 let sortMode = 'default';
@@ -1121,6 +1267,16 @@ function cartItemTotal(entry){
   entry.selectedAddons.forEach(i => { if(service.addons[i]) total += service.addons[i].price; });
   return total;
 }
+function getCartSubtotal(){
+  let total = 0;
+  Object.keys(cart).forEach(key => { total += cartItemTotal(cart[key]); });
+  return total;
+}
+function getDiscountAmount(subtotal){
+  if(!appliedCoupon) return 0;
+  const discount = appliedCoupon.type === 'percent' ? subtotal * (appliedCoupon.value/100) : appliedCoupon.value;
+  return Math.min(discount, subtotal);
+}
 
 // ===== التحقق من بيانات العميل =====
 function isValidSaudiPhone(v){
@@ -1158,6 +1314,8 @@ function updateCart(){
     drawerItems.innerHTML = `<div class="drawer-empty">لا توجد خدمات مطلوبة بعد<br>اضغط على خدمة لتبدأ</div>`;
     sumCount.textContent = '0';
     sumTotal.textContent = '0 ر.س';
+    const discountRowEmpty = document.getElementById('discountRow');
+    if(discountRowEmpty) discountRowEmpty.style.display = 'none';
     refreshCheckoutState();
     return;
   }
@@ -1187,7 +1345,16 @@ function updateCart(){
   }).join('');
 
   sumCount.textContent = keys.length;
-  sumTotal.textContent = grandTotal + ' ر.س';
+  const discount = getDiscountAmount(grandTotal);
+  const discountRow = document.getElementById('discountRow');
+  if(discount > 0){
+    discountRow.style.display = 'flex';
+    document.getElementById('discountCode').textContent = appliedCoupon.code;
+    document.getElementById('discountAmount').textContent = '- ' + discount.toFixed(0) + ' ر.س';
+  } else {
+    discountRow.style.display = 'none';
+  }
+  sumTotal.textContent = (grandTotal - discount) + ' ر.س';
   refreshCheckoutState();
 
   drawerItems.querySelectorAll('.remove-btn').forEach(btn=>{
@@ -1197,6 +1364,27 @@ function updateCart(){
     });
   });
 }
+
+document.getElementById('couponApplyBtn').addEventListener('click', ()=>{
+  const code = document.getElementById('couponInput').value.trim().toUpperCase();
+  if(!code){ showToast('اكتب كود الخصم أولاً', 'error'); return; }
+  const match = getCoupons().find(c => c.code.toUpperCase() === code);
+  if(!match){ showToast('كود الخصم غير صحيح', 'error'); return; }
+  appliedCoupon = match;
+  document.getElementById('couponInputRow').style.display = 'none';
+  document.getElementById('couponApplied').style.display = 'flex';
+  const label = match.type==='percent' ? (match.value + '%') : (match.value + ' ر.س');
+  document.getElementById('couponAppliedText').textContent = '🎟️ ' + match.code + ' — خصم ' + label;
+  updateCart();
+  showToast('تم تطبيق كود الخصم ✓', 'success');
+});
+document.getElementById('couponRemoveBtn').addEventListener('click', ()=>{
+  appliedCoupon = null;
+  document.getElementById('couponInput').value = '';
+  document.getElementById('couponInputRow').style.display = 'flex';
+  document.getElementById('couponApplied').style.display = 'none';
+  updateCart();
+});
 
 document.getElementById('cartToggle').addEventListener('click', ()=>{
   drawer.classList.add('show');
@@ -1217,6 +1405,24 @@ document.getElementById('deliveryInfoBtn').addEventListener('click', (e)=>{
 });
 document.getElementById('deliveryClose').addEventListener('click', ()=>{
   deliveryOverlay.classList.remove('show');
+});
+
+const aboutOverlay = document.getElementById('aboutOverlay');
+document.getElementById('aboutInfoBtn').addEventListener('click', (e)=>{
+  e.preventDefault();
+  aboutOverlay.classList.add('show');
+});
+document.getElementById('aboutClose').addEventListener('click', ()=>{
+  aboutOverlay.classList.remove('show');
+});
+
+const refundOverlay = document.getElementById('refundOverlay');
+document.getElementById('refundInfoBtn').addEventListener('click', (e)=>{
+  e.preventDefault();
+  refundOverlay.classList.add('show');
+});
+document.getElementById('refundClose').addEventListener('click', ()=>{
+  refundOverlay.classList.remove('show');
 });
 
 // ===== تخزين الطلبات محلياً (localStorage) =====
@@ -1241,12 +1447,15 @@ function buildOrderFromCart(ref, paymentId){
       itemTotal: cartItemTotal(entry)
     };
   }).filter(Boolean);
-  const total = items.reduce((s,i)=>s+i.itemTotal,0);
+  const subtotal = items.reduce((s,i)=>s+i.itemTotal,0);
+  const discount = getDiscountAmount(subtotal);
+  const total = subtotal - discount;
   return {
     ref, paymentId,
     date: new Date().toISOString(),
     customer:{ name: custName.value.trim(), phone: custPhone.value.trim(), email: custEmail.value.trim() },
-    items, total, status:'جديد'
+    items, subtotal, discount, couponCode: appliedCoupon ? appliedCoupon.code : null,
+    total, status:'جديد'
   };
 }
 function saveOrder(order){
@@ -1286,16 +1495,16 @@ checkoutBtn.addEventListener('click', ()=>{
   }
   checkoutBtn.textContent = 'جاري تجهيز الدفع...';
   checkoutBtn.disabled = true;
-  let grandTotal = 0;
-  Object.keys(cart).forEach(key => {
-    grandTotal += cartItemTotal(cart[key]);
-  });
+  const subtotal = getCartSubtotal();
+  const discount = getDiscountAmount(subtotal);
+  const grandTotal = subtotal - discount;
 
-  // نحتفظ بحالة السلة والعميل مؤقتاً في حال رجع المستخدم من صفحة دفع خارجية (STC Pay مثلاً)
+  // نحتفظ بحالة السلة والعميل والكوبون مؤقتاً في حال رجع المستخدم من صفحة دفع خارجية (STC Pay مثلاً)
   const pendingRef = 'ORDER-' + Math.floor(100000+Math.random()*900000);
   sessionStorage.setItem('delivr_pending_order', JSON.stringify({
     ref: pendingRef,
     cart: cart,
+    coupon: appliedCoupon,
     customer: { name: custName.value.trim(), phone: custPhone.value.trim(), email: custEmail.value.trim() }
   }));
 
@@ -1341,6 +1550,10 @@ function finalizeOrder(ref, paymentId){
   document.getElementById('orderRef').textContent = 'رقم الطلب — ' + ref;
   document.getElementById('modalOverlay').classList.add('show');
   cart = {};
+  appliedCoupon = null;
+  document.getElementById('couponInput').value = '';
+  document.getElementById('couponInputRow').style.display = 'flex';
+  document.getElementById('couponApplied').style.display = 'none';
   custName.value=''; custPhone.value=''; custEmail.value='';
   sessionStorage.removeItem('delivr_pending_order');
   checkoutBtn.textContent = 'إتمام الدفع عبر ميسر';
@@ -1360,6 +1573,7 @@ function finalizeOrder(ref, paymentId){
   if(status === 'paid' && pendingRaw){
     const pending = JSON.parse(pendingRaw);
     cart = pending.cart;
+    appliedCoupon = pending.coupon || null;
     custName.value = pending.customer.name;
     custPhone.value = pending.customer.phone;
     custEmail.value = pending.customer.email;
@@ -1416,7 +1630,7 @@ document.getElementById('adminExitBtn').addEventListener('click', ()=>{
 });
 
 // تبديل تبويبات لوحة التحكم
-const ADMIN_TAB_PANES = {orders:'paneOrders', products:'paneProducts', reviews:'paneReviews'};
+const ADMIN_TAB_PANES = {orders:'paneOrders', products:'paneProducts', reviews:'paneReviews', coupons:'paneCoupons'};
 document.querySelectorAll('.admin-tab-btn').forEach(btn=>{
   btn.addEventListener('click', ()=>{
     document.querySelectorAll('.admin-tab-btn').forEach(b=>b.classList.remove('active'));
@@ -1425,6 +1639,7 @@ document.querySelectorAll('.admin-tab-btn').forEach(btn=>{
     document.getElementById(ADMIN_TAB_PANES[btn.dataset.tab]).classList.add('active');
     if(btn.dataset.tab==='products') renderProductsAdmin();
     if(btn.dataset.tab==='reviews') renderReviewsAdmin();
+    if(btn.dataset.tab==='coupons') renderCouponsAdmin();
   });
 });
 
@@ -1712,6 +1927,75 @@ document.getElementById('adminResetReviewsBtn').addEventListener('click', ()=>{
   if(!confirm('هذا راح يمسح كل تعديلاتك على التقييمات ويرجعها للإعدادات الافتراضية. متأكد؟')) return;
   saveReviews(DEFAULT_REVIEWS);
   renderReviewsAdmin();
+});
+
+// ===== إدارة الكوبونات =====
+function renderCouponsAdmin(){
+  const coupons = getCoupons();
+  const list = document.getElementById('couponsAdminList');
+  if(coupons.length===0){
+    list.innerHTML = `<div class="orders-empty">لا توجد كوبونات بعد. اضغط "إضافة كوبون" لإنشاء أول كود خصم.</div>`;
+    return;
+  }
+  list.innerHTML = coupons.map(c => couponCardHtml(c)).join('');
+  coupons.forEach(c => wireCouponCard(c.id));
+}
+function couponCardHtml(c){
+  return `
+    <div class="coupon-edit-card" data-id="${c.id}">
+      <div class="re-grid">
+        <div class="field"><label>الكود</label><input type="text" class="ce-code" value="${escAttr(c.code)}" style="text-transform:uppercase;"></div>
+        <div class="field"><label>نوع الخصم</label>
+          <select class="ce-type">
+            <option value="percent" ${c.type==='percent'?'selected':''}>نسبة مئوية %</option>
+            <option value="fixed" ${c.type==='fixed'?'selected':''}>مبلغ ثابت (ر.س)</option>
+          </select>
+        </div>
+        <div class="field"><label>القيمة</label><input type="number" class="ce-value" value="${c.value}" min="0"></div>
+      </div>
+      <div class="pe-actions">
+        <button class="pe-delete" type="button">🗑️ حذف الكوبون</button>
+        <div style="display:flex;align-items:center;gap:12px;">
+          <span class="pe-saved-flag">✓ تم الحفظ</span>
+          <button class="pe-save" type="button">حفظ التعديلات</button>
+        </div>
+      </div>
+    </div>
+  `;
+}
+function wireCouponCard(id){
+  const card = document.querySelector(`.coupon-edit-card[data-id="${id}"]`);
+  if(!card) return;
+  card.querySelector('.pe-delete').addEventListener('click', ()=>{
+    const target = getCoupons().find(c=>c.id===id);
+    if(!target || !confirm('متأكد إنك تبي تحذف كوبون "' + target.code + '"؟')) return;
+    saveCoupons(getCoupons().filter(c=>c.id!==id));
+    renderCouponsAdmin();
+  });
+  card.querySelector('.pe-save').addEventListener('click', ()=>{
+    const coupons = getCoupons();
+    const target = coupons.find(c=>c.id===id);
+    if(!target) return;
+    target.code = (card.querySelector('.ce-code').value.trim() || target.code).toUpperCase();
+    target.type = card.querySelector('.ce-type').value;
+    target.value = Math.max(0, Number(card.querySelector('.ce-value').value) || 0);
+    saveCoupons(coupons);
+    const flag = card.querySelector('.pe-saved-flag');
+    flag.classList.add('show');
+    setTimeout(()=>flag.classList.remove('show'), 1800);
+  });
+}
+document.getElementById('adminAddCouponBtn').addEventListener('click', ()=>{
+  const coupons = getCoupons();
+  const newId = coupons.length ? Math.max(...coupons.map(c=>c.id)) + 1 : 1;
+  coupons.unshift({id:newId, code:'NEWCODE', type:'percent', value:10});
+  saveCoupons(coupons);
+  renderCouponsAdmin();
+});
+document.getElementById('adminResetCouponsBtn').addEventListener('click', ()=>{
+  if(!confirm('هذا راح يمسح كل الكوبونات ويرجعها للإعدادات الافتراضية. متأكد؟')) return;
+  saveCoupons(DEFAULT_COUPONS);
+  renderCouponsAdmin();
 });
 
 document.getElementById('adminAddProductBtn').addEventListener('click', ()=>{
