@@ -1486,6 +1486,17 @@ const OTP_EMAIL = {
   publicKey : 'T1nxL9wZidTnx_XaG'
 };
 
+/* إرسال إيميل تأكيد الطلب للعميل بعد نجاح الدفع.
+   لازم تسوّي Template ثاني (مختلف عن template الـ OTP) في حساب EmailJS نفسه،
+   وتحط فيه المتغيرات: {{to_email}} {{to_name}} {{order_ref}} {{order_items}} {{order_total}} {{customer_phone}}
+   ثم حط templateId تحت. تقدر تستخدم نفس serviceId و publicKey اللي فوق. */
+const ORDER_EMAIL = {
+  provider  : 'emailjs',
+  serviceId : 'service_k0nab6j',
+  templateId: 'template_0fij2bm',
+  publicKey : 'T1nxL9wZidTnx_XaG'
+};
+
 // ===== بيانات المنتجات الافتراضية =====
 const DEFAULT_PRODUCTS = [
   {id:1, ref:'014', name:'متجر إلكتروني كامل', cat:'مواقع', icon:'🛍️', price:1800, days:'5 أيام', delivery:'رابط + كود المصدر', desc:'متجر متكامل بسلة تسوق وصفحات منتجات، جاهز للربط بالدفع.', addons:[{name:'دعم فني إضافي', price:100},{name:'استشارة تقنية', price:150}]},
@@ -1992,6 +2003,37 @@ async function sendOtpEmail(email, code){
   return {sent:true};
 }
 
+function orderEmailConfigured(){
+  return ORDER_EMAIL.provider === 'emailjs' && ORDER_EMAIL.serviceId && ORDER_EMAIL.templateId
+    && ORDER_EMAIL.templateId !== 'template_ORDER_ID_HERE' && ORDER_EMAIL.publicKey;
+}
+// يرسل إيميل تأكيد للعميل بعد نجاح الدفع. لا يوقف تنفيذ الطلب لو فشل الإرسال — بس يسجل الخطأ بالكونسول.
+async function sendOrderConfirmationEmail(order){
+  if(!orderEmailConfigured()) return {sent:false};
+  if(!order.customer || !order.customer.email || !validEmailStrict(order.customer.email)) return {sent:false};
+  try{
+    const ejs = await loadEmailJs();
+    const itemsText = order.items.map(i => {
+      const addons = i.addons && i.addons.length ? (' + ' + i.addons.join('، ')) : '';
+      return '• ' + i.name + addons + ' — ' + i.itemTotal + ' ر.س';
+    }).join('\n');
+    await ejs.send(ORDER_EMAIL.serviceId, ORDER_EMAIL.templateId, {
+      to_email: order.customer.email,
+      to_name: order.customer.name || '',
+      customer_phone: order.customer.phone || '',
+      order_ref: order.ref,
+      order_id: order.paymentId || '',
+      order_items: itemsText,
+      order_total: order.total + ' ر.س',
+      order_date: new Date(order.date).toLocaleString('ar-SA')
+    }, { publicKey: ORDER_EMAIL.publicKey });
+    return {sent:true};
+  }catch(e){
+    console.error('تعذّر إرسال إيميل تأكيد الطلب:', e);
+    return {sent:false, error:e};
+  }
+}
+
 const authOverlay = document.getElementById('authOverlay');
 const accountOverlay = document.getElementById('accountOverlay');
 const AUTH_STEPS = ['stepLogin','stepRegister','stepOtp','stepForgot','stepReset'];
@@ -2120,7 +2162,12 @@ async function startOtp(email, purpose, payload){
   pendingOtp = { email, purpose, payload: payload||null, salt, hash: await hashText(code, salt), exp: Date.now()+OTP_TTL_MS, attempts: 0 };
   let result;
   try{ result = await sendOtpEmail(email, code); }
-  catch(err){ pendingOtp = null; showToast('فشل إرسال الإيميل: ' + (err.message||'خطأ'), 'error'); return false; }
+  catch(err){
+    pendingOtp = null;
+    const detail = (err && (err.text || err.message)) ? (err.text || err.message) : (err && err.status ? ('كود ' + err.status) : 'خطأ غير معروف');
+    showToast('فشل إرسال الإيميل: ' + detail, 'error');
+    return false;
+  }
   document.getElementById('otpEmailLabel').textContent = email;
   document.getElementById('otpInput').value = '';
   const demo = document.getElementById('otpDemo');
@@ -2394,6 +2441,7 @@ function resetCheckoutBtn(){ checkoutBtn.textContent = 'إتمام الدفع ع
 function finalizeOrder(ref, paymentId){
   const order = buildOrderFromCart(ref, paymentId);
   saveOrder(order);
+  sendOrderConfirmationEmail(order); // إرسال إيميل تأكيد للعميل بالخلفية (لا يوقف إتمام الطلب لو فشل)
   const luckWin = getLuckWin();
   if(luckWin && !luckWin.used && order.couponCode === luckWin.code){ luckWin.used = true; saveLuckWin(luckWin); }
   saveLuckPlays(getLuckPlays() + 1);
