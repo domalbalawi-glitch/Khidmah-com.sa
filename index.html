@@ -1,4 +1,5 @@
 
+
 <!DOCTYPE html>
 <html lang="ar" dir="rtl">
 <head>
@@ -1468,6 +1469,23 @@ const ADMIN_PASSWORD = 'Al_mashab_2009-2009.2007';
 const WHATSAPP_NUMBER = '966579598983';
 const MOYASAR_KEY = 'pk_live_KrEnd6JB4rPZ1uPif6US6xFLFTDEyHaARai8FtVA';
 
+/* اتصال Supabase — يستخدم المفتاح العام (anon) فقط، وهذا آمن بكود المتصفح
+   بشرط تفعيل Row Level Security على كل جدول من لوحة تحكم Supabase */
+const SUPABASE_URL = 'https://rxqdgclcrctsyfeuvqss.supabase.co';
+const SUPABASE_ANON_KEY = 'sb_publishable_l1izLZDjGBo6vN11PLXjGg_LPy4Lg6v';
+const sb = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+
+// ===== مزامنة Supabase عامة (تُستخدم لكل الجداول تحت) =====
+async function upsertRows(table, rows){
+  const { error } = await sb.from(table).upsert(rows);
+  if(error){ console.error(table, error.message); showToast('تعذّر حفظ التعديل بقاعدة البيانات — تحقق من اتصالك', 'error'); }
+  return !error;
+}
+async function deleteRowRemote(table, idField, val){
+  const { error } = await sb.from(table).delete().eq(idField, val);
+  if(error) console.error(table, error.message);
+}
+
 /* إرسال رمز التحقق على الإيميل.
    وضع 'demo' = يعرض الرمز على الشاشة (للتجربة فقط).
    للتفعيل الحقيقي: سجّل في EmailJS، سوِّ Template فيه {{to_email}} و {{passcode}}،
@@ -1493,15 +1511,50 @@ const DEFAULT_PRODUCTS = [
 ];
 
 const PRODUCTS_KEY = 'delivr_products_v1';
+// productsCache تُقرأ محلياً وبشكل فوري من كل أجزاء الكود (بدون async)،
+// وتُحدَّث بالخلفية من Supabase عند تحميل الصفحة وبعد كل تعديل بلوحة التحكم.
+let productsCache = null;
 function getProducts(){
+  if(productsCache) return productsCache;
   try{
     const raw = localStorage.getItem(PRODUCTS_KEY);
-    if(raw) return JSON.parse(raw);
+    if(raw){ productsCache = JSON.parse(raw); return productsCache; }
   }catch(e){}
-  saveProducts(DEFAULT_PRODUCTS);
-  return JSON.parse(JSON.stringify(DEFAULT_PRODUCTS));
+  productsCache = JSON.parse(JSON.stringify(DEFAULT_PRODUCTS));
+  return productsCache;
 }
-function saveProducts(list){ localStorage.setItem(PRODUCTS_KEY, JSON.stringify(list)); }
+// حفظ محلي فوري (بدون Supabase) — يُستخدم داخلياً فقط
+function setProductsLocal(list){ productsCache = list; localStorage.setItem(PRODUCTS_KEY, JSON.stringify(list)); }
+// حفظ في Supabase + تحديث الكاش المحلي فوراً حتى تظهر بالواجهة بدون تأخير
+async function saveProducts(list){
+  setProductsLocal(list);
+  const rows = list.map(p => ({
+    id: p.id, ref: p.ref, name: p.name, cat: p.cat, icon: p.icon,
+    price: p.price, days: p.days, delivery: p.delivery, desc: p.desc, addons: p.addons
+  }));
+  await upsertRows('products', rows);
+}
+async function deleteProductRemote(id){ await deleteRowRemote('products', 'id', id); }
+// تحميل المنتجات من Supabase (تُستدعى عند بدء التشغيل وبعد أي تعديل بلوحة التحكم)
+async function loadProductsFromSupabase(){
+  const { data, error } = await sb.from('products').select('*').order('id');
+  if(error){
+    console.error('تعذّر تحميل المنتجات من Supabase:', error.message);
+    showToast('تعذّر الاتصال بقاعدة البيانات، يتم عرض بيانات محلية مؤقتاً', 'error');
+    return;
+  }
+  if(!data || data.length===0){
+    // أول مرة تشتغل: القاعدة فاضية، نرفع لها المنتجات الافتراضية
+    await saveProducts(DEFAULT_PRODUCTS);
+    return;
+  }
+  const list = data.map(p => ({
+    id: p.id, ref: p.ref, name: p.name, cat: p.cat, icon: p.icon,
+    price: Number(p.price), days: p.days, delivery: p.delivery,
+    desc: p.desc || '', addons: p.addons || []
+  }));
+  setProductsLocal(list);
+}
 function getProductById(id){ return getProducts().find(p=>p.id===id); }
 
 function escAttr(s){ return String(s).replace(/"/g,'&quot;'); }
@@ -1519,10 +1572,18 @@ function getReviews(){
     const raw = localStorage.getItem(REVIEWS_KEY);
     if(raw) return JSON.parse(raw);
   }catch(e){}
-  saveReviews(DEFAULT_REVIEWS);
+  setReviewsLocal(DEFAULT_REVIEWS);
   return JSON.parse(JSON.stringify(DEFAULT_REVIEWS));
 }
-function saveReviews(list){ localStorage.setItem(REVIEWS_KEY, JSON.stringify(list)); }
+function setReviewsLocal(list){ localStorage.setItem(REVIEWS_KEY, JSON.stringify(list)); }
+async function saveReviews(list){ setReviewsLocal(list); await upsertRows('reviews', list); }
+async function deleteReviewRemote(id){ await deleteRowRemote('reviews', 'id', id); }
+async function loadReviewsFromSupabase(){
+  const { data, error } = await sb.from('reviews').select('*').order('id');
+  if(error){ console.error('reviews', error.message); return; }
+  if(!data || data.length===0){ await saveReviews(DEFAULT_REVIEWS); return; }
+  setReviewsLocal(data);
+}
 function starString(rating){
   const r = Math.max(0, Math.min(5, Math.round(rating)));
   return '★'.repeat(r) + '☆'.repeat(5-r);
@@ -1562,10 +1623,18 @@ function getCoupons(){
     const raw = localStorage.getItem(COUPONS_KEY);
     if(raw) return JSON.parse(raw);
   }catch(e){}
-  saveCoupons(DEFAULT_COUPONS);
+  setCouponsLocal(DEFAULT_COUPONS);
   return JSON.parse(JSON.stringify(DEFAULT_COUPONS));
 }
-function saveCoupons(list){ localStorage.setItem(COUPONS_KEY, JSON.stringify(list)); }
+function setCouponsLocal(list){ localStorage.setItem(COUPONS_KEY, JSON.stringify(list)); }
+async function saveCoupons(list){ setCouponsLocal(list); await upsertRows('coupons', list); }
+async function deleteCouponRemote(id){ await deleteRowRemote('coupons', 'id', id); }
+async function loadCouponsFromSupabase(){
+  const { data, error } = await sb.from('coupons').select('*').order('id');
+  if(error){ console.error('coupons', error.message); return; }
+  if(!data || data.length===0){ await saveCoupons(DEFAULT_COUPONS); return; }
+  setCouponsLocal(data);
+}
 
 let activeCat = 'الكل';
 let cart = {};
@@ -2240,8 +2309,10 @@ document.getElementById('suggestSendBtn').addEventListener('click', ()=>{
   const text = document.getElementById('suggestText').value.trim();
   if(!text){ showToast('اكتب اقتراحك أولاً', 'error'); return; }
   const suggestions = getSuggestions();
-  suggestions.unshift({id: Date.now(), text, date: new Date().toISOString(), from: currentUser ? currentUser.email : 'ضيف'});
+  const newSuggestion = {id: Date.now(), text, date: new Date().toISOString(), from: currentUser ? currentUser.email : 'ضيف'};
+  suggestions.unshift(newSuggestion);
   saveSuggestions(suggestions);
+  saveSuggestionRemote(newSuggestion);
   document.getElementById('suggestFormArea').style.display = 'none';
   document.getElementById('suggestConfirm').style.display = 'block';
   document.getElementById('suggestText').value = '';
@@ -2273,7 +2344,29 @@ function buildOrderFromCart(ref, paymentId){
     total: subtotal - discount, status:'جديد'
   };
 }
-function saveOrder(order){ const orders = getOrders(); orders.unshift(order); saveOrders(orders); }
+function saveOrder(order){ const orders = getOrders(); orders.unshift(order); saveOrders(orders); saveOrderRemote(order); }
+async function saveOrderRemote(order){
+  await upsertRows('orders', [{
+    ref: order.ref, payment_id: order.paymentId, date: order.date, user_email: order.userEmail,
+    customer: order.customer, items: order.items, subtotal: order.subtotal, discount: order.discount,
+    coupon_code: order.couponCode, total: order.total, status: order.status
+  }]);
+}
+async function updateOrderStatusRemote(ref, status){
+  const { error } = await sb.from('orders').update({status}).eq('ref', ref);
+  if(error){ console.error('orders', error.message); showToast('تعذّر تحديث حالة الطلب بقاعدة البيانات', 'error'); }
+}
+async function loadOrdersFromSupabase(){
+  const { data, error } = await sb.from('orders').select('*').order('date', {ascending:false});
+  if(error){ console.error('orders', error.message); return; }
+  if(!data) return;
+  const list = data.map(r => ({
+    ref: r.ref, paymentId: r.payment_id, date: r.date, userEmail: r.user_email,
+    customer: r.customer, items: r.items, subtotal: Number(r.subtotal), discount: Number(r.discount),
+    couponCode: r.coupon_code, total: Number(r.total), status: r.status
+  }));
+  saveOrders(list);
+}
 
 // ===== عداد الزيارات =====
 const VISITS_KEY = 'delivr_visits_v1';
@@ -2474,6 +2567,8 @@ function openAdmin(){
   adminScreen.classList.add('show');
   document.getElementById('adminVisitsCount').textContent = getVisitCount();
   renderAdminOrders();
+  // نحدّث الطلبات من قاعدة البيانات فور فتح اللوحة (قد تكون وصلت طلبات من أجهزة ثانية)
+  loadOrdersFromSupabase().then(renderAdminOrders);
 }
 
 function renderAdminOrders(){
@@ -2529,7 +2624,7 @@ function renderAdminOrders(){
     sel.addEventListener('change', ()=>{
       const orders = getOrders();
       const target = orders.find(o=>o.ref===sel.dataset.ref);
-      if(target){ target.status = sel.value; saveOrders(orders); renderAdminOrders(); }
+      if(target){ target.status = sel.value; saveOrders(orders); updateOrderStatusRemote(sel.dataset.ref, sel.value); renderAdminOrders(); }
     });
   });
 }
@@ -2612,9 +2707,10 @@ function wireProductCard(id){
     wireAddonRemoveButtons(card);
   });
   wireAddonRemoveButtons(card);
-  card.querySelector('.pe-delete').addEventListener('click', ()=>{
+  card.querySelector('.pe-delete').addEventListener('click', async ()=>{
     if(!confirm('متأكد إنك تبي تحذف "' + getProductById(id).name + '"؟')) return;
-    saveProducts(getProducts().filter(p=>p.id!==id));
+    await deleteProductRemote(id);
+    setProductsLocal(getProducts().filter(p=>p.id!==id));
     renderProductsAdmin();
   });
   card.querySelector('.pe-save').addEventListener('click', ()=>{
@@ -2687,10 +2783,11 @@ function reviewCardHtml(r){
 function wireReviewCard(id){
   const card = document.querySelector(`.review-edit-card[data-id="${id}"]`);
   if(!card) return;
-  card.querySelector('.pe-delete').addEventListener('click', ()=>{
+  card.querySelector('.pe-delete').addEventListener('click', async ()=>{
     const target = getReviews().find(r=>r.id===id);
     if(!target || !confirm('متأكد إنك تبي تحذف تقييم "' + target.name + '"؟')) return;
-    saveReviews(getReviews().filter(r=>r.id!==id)); renderReviewsAdmin(); renderReviews();
+    await deleteReviewRemote(id);
+    setReviewsLocal(getReviews().filter(r=>r.id!==id)); renderReviewsAdmin(); renderReviews();
   });
   card.querySelector('.pe-save').addEventListener('click', ()=>{
     const reviews = getReviews();
@@ -2749,10 +2846,11 @@ function couponCardHtml(c){
 function wireCouponCard(id){
   const card = document.querySelector(`.coupon-edit-card[data-id="${id}"]`);
   if(!card) return;
-  card.querySelector('.pe-delete').addEventListener('click', ()=>{
+  card.querySelector('.pe-delete').addEventListener('click', async ()=>{
     const target = getCoupons().find(c=>c.id===id);
     if(!target || !confirm('متأكد إنك تبي تحذف كوبون "' + target.code + '"؟')) return;
-    saveCoupons(getCoupons().filter(c=>c.id!==id)); renderCouponsAdmin();
+    await deleteCouponRemote(id);
+    setCouponsLocal(getCoupons().filter(c=>c.id!==id)); renderCouponsAdmin();
   });
   card.querySelector('.pe-save').addEventListener('click', ()=>{
     const coupons = getCoupons();
@@ -2784,10 +2882,20 @@ const LUCK_PLAYS_KEY = 'delivr_luck_plays_v1';
 const LUCK_WIN_KEY = 'delivr_luck_win_v1';
 function getLuckSettings(){
   try{ const raw = localStorage.getItem(LUCK_SETTINGS_KEY); if(raw) return JSON.parse(raw); }catch(e){}
-  saveLuckSettings(DEFAULT_LUCK_SETTINGS);
+  setLuckSettingsLocal(DEFAULT_LUCK_SETTINGS);
   return JSON.parse(JSON.stringify(DEFAULT_LUCK_SETTINGS));
 }
-function saveLuckSettings(s){ try{ localStorage.setItem(LUCK_SETTINGS_KEY, JSON.stringify(s)); }catch(e){} }
+function setLuckSettingsLocal(s){ try{ localStorage.setItem(LUCK_SETTINGS_KEY, JSON.stringify(s)); }catch(e){} }
+async function saveLuckSettings(s){
+  setLuckSettingsLocal(s);
+  await upsertRows('luck_settings', [{id:1, enabled:s.enabled, initial_plays:s.initialPlays, prizes:s.prizes}]);
+}
+async function loadLuckSettingsFromSupabase(){
+  const { data, error } = await sb.from('luck_settings').select('*').eq('id',1).maybeSingle();
+  if(error){ console.error('luck_settings', error.message); return; }
+  if(!data){ await saveLuckSettings(DEFAULT_LUCK_SETTINGS); return; }
+  setLuckSettingsLocal({enabled:data.enabled, initialPlays:data.initial_plays, prizes:data.prizes});
+}
 function getLuckPlays(){
   try{ const raw = localStorage.getItem(LUCK_PLAYS_KEY); if(raw !== null) return Number(raw); }catch(e){}
   const initial = getLuckSettings().initialPlays; saveLuckPlays(initial); return initial;
@@ -2934,6 +3042,15 @@ document.getElementById('adminResetMyPlaysBtn').addEventListener('click', ()=>{
 const SUGGESTIONS_KEY = 'delivr_suggestions_v1';
 function getSuggestions(){ try{ return JSON.parse(localStorage.getItem(SUGGESTIONS_KEY)) || []; }catch(e){ return []; } }
 function saveSuggestions(list){ localStorage.setItem(SUGGESTIONS_KEY, JSON.stringify(list)); }
+async function saveSuggestionRemote(s){
+  await upsertRows('suggestions', [{id: s.id, text_content: s.text, date: s.date, sender_email: s.from}]);
+}
+async function loadSuggestionsFromSupabase(){
+  const { data, error } = await sb.from('suggestions').select('*').order('date', {ascending:false});
+  if(error){ console.error('suggestions', error.message); return; }
+  if(!data) return;
+  saveSuggestions(data.map(r=>({id:r.id, text:r.text_content, date:r.date, from:r.sender_email})));
+}
 function renderSuggestionsAdmin(){
   const suggestions = getSuggestions();
   const list = document.getElementById('suggestionsAdminList');
@@ -2944,9 +3061,11 @@ function renderSuggestionsAdmin(){
       <div style="font-size:13.5px;line-height:1.7;">${escHtml(s.text)}</div>
     </div>`).join('');
 }
-document.getElementById('adminClearSuggestionsBtn').addEventListener('click', ()=>{
+document.getElementById('adminClearSuggestionsBtn').addEventListener('click', async ()=>{
   if(!confirm('متأكد إنك تبي تمسح كل الاقتراحات؟')) return;
+  const ids = getSuggestions().map(s=>s.id);
   saveSuggestions([]); renderSuggestionsAdmin();
+  for(const id of ids){ await deleteRowRemote('suggestions', 'id', id); }
 });
 
 /* ===== البحث والترتيب ===== */
@@ -3059,12 +3178,21 @@ navMenuPanel.querySelectorAll('a').forEach(link=>{
   const s = getSession();
   if(s){ const u = findUser(s.email); if(u) currentUser = u; else clearSession(); }
 })();
+// نعرض فوراً بالبيانات المحلية (أو الافتراضية) حتى لا ينتظر الزائر الاتصال بالسيرفر،
+// ثم نحدّث من Supabase بالخلفية ونعيد الرسم فور وصول البيانات الحقيقية
 renderFilters();
 renderGrid();
 renderReviews();
 applyLoginState();
 updateCart();
 applyLuckNavVisibility();
+
+loadProductsFromSupabase().then(()=>{ renderFilters(); renderGrid(); });
+loadOrdersFromSupabase();
+loadReviewsFromSupabase().then(renderReviews);
+loadCouponsFromSupabase();
+loadSuggestionsFromSupabase();
+loadLuckSettingsFromSupabase().then(applyLuckNavVisibility);
 </script>
 </body>
 </html>
