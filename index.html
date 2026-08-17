@@ -1,5 +1,4 @@
 
-
 <!DOCTYPE html>
 <html lang="ar" dir="rtl">
 <head>
@@ -16,6 +15,7 @@
 <!-- مكتبة ميسر لتصميم واجهة الدفع المباشر -->
 <link rel="stylesheet" href="https://cdn.moyasar.com/mp/1.7.3/moyasar.css">
 <script src="https://cdn.moyasar.com/mp/1.7.3/moyasar.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js"></script>
 
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -1469,15 +1469,21 @@ const ADMIN_PASSWORD = 'Al_mashab_2009-2009.2007';
 const WHATSAPP_NUMBER = '966579598983';
 const MOYASAR_KEY = 'pk_live_KrEnd6JB4rPZ1uPif6US6xFLFTDEyHaARai8FtVA';
 
+/* اتصال Supabase — يستخدم المفتاح العام (anon) فقط، وهذا آمن بكود المتصفح
+   بشرط تفعيل Row Level Security على كل جدول من لوحة تحكم Supabase */
+const SUPABASE_URL = 'https://rxqdgclcrctsyfeuvqss.supabase.co';
+const SUPABASE_ANON_KEY = 'sb_publishable_l1izLZDjGBo6vN11PLXjGg_LPy4Lg6v';
+const sb = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+
 /* إرسال رمز التحقق على الإيميل.
    وضع 'demo' = يعرض الرمز على الشاشة (للتجربة فقط).
    للتفعيل الحقيقي: سجّل في EmailJS، سوِّ Template فيه {{to_email}} و {{passcode}}،
    وحط القيم تحت وخلّ provider = 'emailjs'  */
 const OTP_EMAIL = {
-  provider  : 'demo',
-  serviceId : '',
-  templateId: '',
-  publicKey : ''
+  provider  : 'emailjs',
+  serviceId : 'service_k0nab6j',
+  templateId: 'template_3puoucj',
+  publicKey : 'T1nxL9wZidTnx_XaG'
 };
 
 // ===== بيانات المنتجات الافتراضية =====
@@ -1494,15 +1500,66 @@ const DEFAULT_PRODUCTS = [
 ];
 
 const PRODUCTS_KEY = 'delivr_products_v1';
+
+// productsCache تُقرأ محلياً وبشكل فوري من كل أجزاء الكود (بدون async)،
+// وتُحدَّث بالخلفية من Supabase عند تحميل الصفحة وبعد كل تعديل بلوحة التحكم.
+let productsCache = null;
+
 function getProducts(){
+  if(productsCache) return productsCache;
   try{
     const raw = localStorage.getItem(PRODUCTS_KEY);
-    if(raw) return JSON.parse(raw);
+    if(raw){ productsCache = JSON.parse(raw); return productsCache; }
   }catch(e){}
-  saveProducts(DEFAULT_PRODUCTS);
-  return JSON.parse(JSON.stringify(DEFAULT_PRODUCTS));
+  productsCache = JSON.parse(JSON.stringify(DEFAULT_PRODUCTS));
+  return productsCache;
 }
-function saveProducts(list){ localStorage.setItem(PRODUCTS_KEY, JSON.stringify(list)); }
+
+// تحميل المنتجات من Supabase (تُستدعى عند بدء التشغيل وبعد أي تعديل بلوحة التحكم)
+async function loadProductsFromSupabase(){
+  const { data, error } = await sb.from('products').select('*').order('id');
+  if(error){
+    console.error('تعذّر تحميل المنتجات من Supabase:', error.message);
+    showToast('تعذّر الاتصال بقاعدة البيانات، يتم عرض بيانات محلية مؤقتاً', 'error');
+    return;
+  }
+  if(!data || data.length===0){
+    // أول مرة تشتغل: القاعدة فاضية، نرفع لها المنتجات الافتراضية
+    await saveProducts(DEFAULT_PRODUCTS);
+    return;
+  }
+  productsCache = data.map(p => ({
+    id: p.id, ref: p.ref, name: p.name, cat: p.cat, icon: p.icon,
+    price: Number(p.price), days: p.days, delivery: p.delivery,
+    desc: p.desc || '', addons: p.addons || []
+  }));
+  localStorage.setItem(PRODUCTS_KEY, JSON.stringify(productsCache));
+}
+
+// حفظ المنتجات في Supabase (وتحديث الكاش المحلي فوراً حتى تظهر بالواجهة بدون تأخير)
+async function saveProducts(list){
+  productsCache = list;
+  localStorage.setItem(PRODUCTS_KEY, JSON.stringify(list));
+  const rows = list.map(p => ({
+    id: p.id, ref: p.ref, name: p.name, cat: p.cat, icon: p.icon,
+    price: p.price, days: p.days, delivery: p.delivery, desc: p.desc, addons: p.addons
+  }));
+  const { error } = await sb.from('products').upsert(rows);
+  if(error){
+    console.error('تعذّر حفظ المنتجات في Supabase:', error.message);
+    showToast('تعذّر حفظ التعديل بقاعدة البيانات — تحقق من اتصالك', 'error');
+  }
+}
+
+// حذف منتج واحد من Supabase
+async function deleteProductRemote(id){
+  const { error } = await sb.from('products').delete().eq('id', id);
+  if(error){
+    console.error('تعذّر حذف المنتج من Supabase:', error.message);
+    showToast('تعذّر حذف الخدمة من قاعدة البيانات', 'error');
+  }
+}
+
 function getProductById(id){ return getProducts().find(p=>p.id===id); }
 
 function escAttr(s){ return String(s).replace(/"/g,'&quot;'); }
@@ -2615,6 +2672,7 @@ function wireProductCard(id){
   wireAddonRemoveButtons(card);
   card.querySelector('.pe-delete').addEventListener('click', ()=>{
     if(!confirm('متأكد إنك تبي تحذف "' + getProductById(id).name + '"؟')) return;
+    deleteProductRemote(id);
     saveProducts(getProducts().filter(p=>p.id!==id));
     renderProductsAdmin();
   });
@@ -3060,12 +3118,18 @@ navMenuPanel.querySelectorAll('a').forEach(link=>{
   const s = getSession();
   if(s){ const u = findUser(s.email); if(u) currentUser = u; else clearSession(); }
 })();
+// نعرض فوراً بالبيانات المحلية (أو الافتراضية) حتى لا ينتظر الزائر الاتصال بالسيرفر،
+// ثم نحدّث من Supabase بالخلفية ونعيد الرسم فور وصول البيانات الحقيقية
 renderFilters();
 renderGrid();
 renderReviews();
 applyLoginState();
 updateCart();
 applyLuckNavVisibility();
+loadProductsFromSupabase().then(()=>{
+  renderFilters();
+  renderGrid();
+});
 </script>
 </body>
 </html>
