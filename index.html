@@ -165,10 +165,15 @@
   }
   .card{
     background:var(--surface);border:1px solid var(--line);border-radius:12px;
-    overflow:hidden;display:flex;flex-direction:column;transition:border-color .2s;
+    overflow:hidden;display:flex;flex-direction:column;
+    transition:border-color .2s, transform .2s ease, box-shadow .2s ease;
     cursor:pointer;
   }
-  .card:hover{border-color:var(--accent);}
+  .card:hover{
+    border-color:var(--accent);transform:translateY(-3px);
+    box-shadow:0 14px 28px rgba(0,0,0,.35);
+  }
+  .card:active{transform:translateY(-1px);}
   .card-media{
     height:120px;background:var(--surface-2);position:relative;
     display:flex;align-items:center;justify-content:center;font-size:36px;
@@ -600,7 +605,9 @@
     padding:10px 16px;font-family:var(--mono);font-size:12px;white-space:nowrap;
   }
   .track-order-btn:hover{border-color:var(--accent);color:var(--accent);}
-  .no-results{grid-column:1/-1;text-align:center;color:var(--muted);font-family:var(--mono);padding:40px 0;}
+  .no-results{grid-column:1/-1;text-align:center;color:var(--muted);font-family:var(--mono);padding:56px 0;}
+  .no-results .nr-icon{font-size:30px;margin-bottom:10px;opacity:.6;}
+  .no-results .nr-text{font-size:13px;}
 
   /* أزرار عائمة */
   .float-stack{position:fixed;bottom:22px;left:22px;z-index:45;display:flex;flex-direction:column;gap:12px;}
@@ -651,8 +658,15 @@
   .rating-badge .stars{color:var(--warn);letter-spacing:2px;}
   .rating-badge b{color:var(--text);font-size:15px;}
   .reviews-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:16px;}
-  .review-card{background:var(--surface);border:1px solid var(--line);border-radius:12px;padding:18px;display:flex;flex-direction:column;gap:10px;}
+  .review-card{background:var(--surface);border:1px solid var(--line);border-radius:12px;padding:18px;display:flex;flex-direction:column;gap:10px;transition:border-color .2s, transform .2s ease;}
+  .review-card:hover{border-color:var(--accent);transform:translateY(-2px);}
   .review-card-top{display:flex;justify-content:space-between;align-items:center;gap:10px;}
+  .review-who{display:flex;align-items:center;gap:9px;}
+  .review-avatar{
+    width:30px;height:30px;border-radius:50%;background:var(--accent-dim);color:var(--accent);
+    display:flex;align-items:center;justify-content:center;font-weight:700;font-size:12.5px;flex-shrink:0;
+    font-family:var(--sans);border:1px solid var(--line);
+  }
   .review-name{font-weight:700;font-size:14px;}
   .review-stars{color:var(--warn);font-size:14px;letter-spacing:1px;white-space:nowrap;}
   .review-comment{color:var(--muted);font-size:13px;line-height:1.7;flex:1;}
@@ -838,7 +852,7 @@
 
 <div class="reviews" id="reviewsSection">
   <div class="reviews-title">آراء العملاء</div>
-  <h2>شو قالوا عن خِدمه</h2>
+  <h2>وش قالوا عن خِدمه</h2>
   <div class="reviews-summary" id="reviewsSummary"></div>
   <div class="reviews-grid" id="reviewsGrid"></div>
 </div>
@@ -1583,15 +1597,39 @@ const DEFAULT_REVIEWS = [
   {id:3, name:'فهد العنزي', service:'بوت واتساب وتلغرام', rating:4, comment:'البوت شغال تمام، احتجت تعديل بسيط بعد التسليم وردوا عليه بنفس اليوم.'},
 ];
 const REVIEWS_KEY = 'delivr_reviews_v1';
+let reviewsCache = null;
 function getReviews(){
+  if(reviewsCache) return reviewsCache;
   try{
     const raw = localStorage.getItem(REVIEWS_KEY);
-    if(raw) return JSON.parse(raw);
+    if(raw){ reviewsCache = JSON.parse(raw); return reviewsCache; }
   }catch(e){}
-  saveReviews(DEFAULT_REVIEWS);
-  return JSON.parse(JSON.stringify(DEFAULT_REVIEWS));
+  reviewsCache = JSON.parse(JSON.stringify(DEFAULT_REVIEWS));
+  return reviewsCache;
 }
-function saveReviews(list){ localStorage.setItem(REVIEWS_KEY, JSON.stringify(list)); }
+// تحميل التقييمات من Supabase — تُستدعى عند بدء التشغيل لأنها تظهر لكل الزوار بصفحة المتجر
+async function loadReviewsFromSupabase(){
+  const { data, error } = await sb.from('reviews').select('*').order('id');
+  if(error){ console.error('تعذّر تحميل التقييمات من Supabase:', error.message); return; }
+  if(!data || data.length===0){ await saveReviews(DEFAULT_REVIEWS); return; }
+  reviewsCache = data.map(r => ({ id:r.id, name:r.name, service:r.service, rating:Number(r.rating), comment:r.comment }));
+  localStorage.setItem(REVIEWS_KEY, JSON.stringify(reviewsCache));
+}
+async function saveReviews(list){
+  reviewsCache = list;
+  localStorage.setItem(REVIEWS_KEY, JSON.stringify(list));
+  if(!list.length) return;
+  const { error } = await sb.from('reviews').upsert(list);
+  if(error){ console.error('تعذّر حفظ التقييمات في Supabase:', error.message); showToast('تعذّر حفظ التعديل بقاعدة البيانات — تحقق من اتصالك', 'error'); }
+}
+async function deleteReviewRemote(id){
+  const { error } = await sb.from('reviews').delete().eq('id', id);
+  if(error){ console.error('تعذّر حذف التقييم من Supabase:', error.message); showToast('تعذّر حذف التقييم من قاعدة البيانات', 'error'); }
+}
+async function clearReviewsRemote(){
+  const { error } = await sb.from('reviews').delete().neq('id', -1);
+  if(error) console.error('تعذّر مسح التقييمات من Supabase:', error.message);
+}
 function starString(rating){
   const r = Math.max(0, Math.min(5, Math.round(rating)));
   return '★'.repeat(r) + '☆'.repeat(5-r);
@@ -1603,7 +1641,7 @@ function renderReviews(){
   if(!summaryEl || !reviewsGridEl) return;
   if(reviews.length===0){
     summaryEl.innerHTML = '';
-    reviewsGridEl.innerHTML = `<div class="no-results">لسا ما فيه تقييمات، كن أول من يشاركنا رأيه.</div>`;
+    reviewsGridEl.innerHTML = `<div class="no-results"><div class="nr-icon">💬</div><div class="nr-text">لسا ما فيه تقييمات، كن أول من يشاركنا رأيه.</div></div>`;
     return;
   }
   const avg = reviews.reduce((s,r)=>s+r.rating,0) / reviews.length;
@@ -1615,7 +1653,10 @@ function renderReviews(){
   reviewsGridEl.innerHTML = reviews.map(r => `
     <div class="review-card">
       <div class="review-card-top">
-        <div class="review-name">${escHtml(r.name)}</div>
+        <div class="review-who">
+          <div class="review-avatar">${escHtml(String(r.name||'?').trim().charAt(0).toUpperCase())}</div>
+          <div class="review-name">${escHtml(r.name)}</div>
+        </div>
         <div class="review-stars">${starString(r.rating)}</div>
       </div>
       <div class="review-comment">${escHtml(r.comment)}</div>
@@ -1626,15 +1667,39 @@ function renderReviews(){
 // ===== كوبونات الخصم =====
 const DEFAULT_COUPONS = [{id:1, code:'WELCOME10', type:'percent', value:10}];
 const COUPONS_KEY = 'delivr_coupons_v1';
+let couponsCache = null;
 function getCoupons(){
+  if(couponsCache) return couponsCache;
   try{
     const raw = localStorage.getItem(COUPONS_KEY);
-    if(raw) return JSON.parse(raw);
+    if(raw){ couponsCache = JSON.parse(raw); return couponsCache; }
   }catch(e){}
-  saveCoupons(DEFAULT_COUPONS);
-  return JSON.parse(JSON.stringify(DEFAULT_COUPONS));
+  couponsCache = JSON.parse(JSON.stringify(DEFAULT_COUPONS));
+  return couponsCache;
 }
-function saveCoupons(list){ localStorage.setItem(COUPONS_KEY, JSON.stringify(list)); }
+// تحميل الكوبونات من Supabase — تُستدعى عند بدء التشغيل لأن أي عميل يحتاجها وقت إدخال كود الخصم
+async function loadCouponsFromSupabase(){
+  const { data, error } = await sb.from('coupons').select('*').order('id');
+  if(error){ console.error('تعذّر تحميل الكوبونات من Supabase:', error.message); return; }
+  if(!data || data.length===0){ await saveCoupons(DEFAULT_COUPONS); return; }
+  couponsCache = data.map(c => ({ id:c.id, code:c.code, type:c.type, value:Number(c.value) }));
+  localStorage.setItem(COUPONS_KEY, JSON.stringify(couponsCache));
+}
+async function saveCoupons(list){
+  couponsCache = list;
+  localStorage.setItem(COUPONS_KEY, JSON.stringify(list));
+  if(!list.length) return;
+  const { error } = await sb.from('coupons').upsert(list);
+  if(error){ console.error('تعذّر حفظ الكوبونات في Supabase:', error.message); showToast('تعذّر حفظ التعديل بقاعدة البيانات — تحقق من اتصالك', 'error'); }
+}
+async function deleteCouponRemote(id){
+  const { error } = await sb.from('coupons').delete().eq('id', id);
+  if(error){ console.error('تعذّر حذف الكوبون من Supabase:', error.message); showToast('تعذّر حذف الكوبون من قاعدة البيانات', 'error'); }
+}
+async function clearCouponsRemote(){
+  const { error } = await sb.from('coupons').delete().neq('id', -1);
+  if(error) console.error('تعذّر مسح الكوبونات من Supabase:', error.message);
+}
 
 let activeCat = 'الكل';
 let cart = {};
@@ -1679,7 +1744,7 @@ function renderGrid(){
   else if(sortMode==='name') items = [...items].sort((a,b)=>a.name.localeCompare(b.name,'ar'));
 
   if(items.length===0){
-    gridEl.innerHTML = `<div class="no-results">لا توجد خدمات مطابقة لبحثك. جرّب كلمة أخرى أو امسح البحث.</div>`;
+    gridEl.innerHTML = `<div class="no-results"><div class="nr-icon">🔍</div><div class="nr-text">لا توجد خدمات مطابقة لبحثك. جرّب كلمة أخرى أو امسح البحث.</div></div>`;
     return;
   }
   gridEl.innerHTML = items.map(p => `
@@ -2300,7 +2365,7 @@ function myOrders(){
     (o.customer && normEmail(o.customer.email) === currentUser.email) ||
     (currentUser.phone && o.customer && normPhone(o.customer.phone) === currentUser.phone));
 }
-function openAccount(){
+async function openAccount(){
   if(!currentUser) return openAuth('stepLogin');
   document.getElementById('accHello').textContent = 'أهلاً ' + displayName(currentUser);
   document.getElementById('accName').textContent = currentUser.name || '—';
@@ -2308,11 +2373,13 @@ function openAccount(){
   document.getElementById('accPhoneRow').style.display = currentUser.phone ? 'flex' : 'none';
   document.getElementById('accPhone').textContent = currentUser.phone || '';
   document.getElementById('accDate').textContent = new Date(currentUser.createdAt).toLocaleDateString('ar-SA');
+  accountOverlay.classList.add('show');
+  document.getElementById('accOrders').innerHTML = '<div class="acc-empty">جارِ التحميل...</div>';
+  await loadOrdersFromSupabase();
   const orders = myOrders();
   document.getElementById('accOrders').innerHTML = orders.length
     ? orders.slice(0,6).map(o => `<div class="acc-order"><span class="r">${escHtml(o.ref)}</span><span>${o.total} ر.س</span><span class="acc-badge">${escHtml(o.status)}</span></div>`).join('')
-    : '<div class="acc-empty">ما فيه طلبات مسجّلة على هذا الجهاز بعد</div>';
-  accountOverlay.classList.add('show');
+    : '<div class="acc-empty">ما فيه طلبات مسجّلة على حسابك بعد</div>';
 }
 document.getElementById('accLogoutBtn').addEventListener('click', logoutUser);
 document.getElementById('accChangePassBtn').addEventListener('click', ()=>{
@@ -2345,8 +2412,10 @@ document.getElementById('suggestSendBtn').addEventListener('click', ()=>{
   const text = document.getElementById('suggestText').value.trim();
   if(!text){ showToast('اكتب اقتراحك أولاً', 'error'); return; }
   const suggestions = getSuggestions();
-  suggestions.unshift({id: Date.now(), text, date: new Date().toISOString(), from: currentUser ? currentUser.email : 'ضيف'});
+  const newSuggestion = {id: Date.now(), text, date: new Date().toISOString(), from: currentUser ? currentUser.email : 'ضيف'};
+  suggestions.unshift(newSuggestion);
   saveSuggestions(suggestions);
+  addSuggestionRemote(newSuggestion);
   document.getElementById('suggestFormArea').style.display = 'none';
   document.getElementById('suggestConfirm').style.display = 'block';
   document.getElementById('suggestText').value = '';
@@ -2355,8 +2424,44 @@ document.getElementById('suggestSendBtn').addEventListener('click', ()=>{
 
 // ===== الطلبات =====
 const ORDERS_KEY = 'delivr_orders_v1';
-function getOrders(){ try{ return JSON.parse(localStorage.getItem(ORDERS_KEY)) || []; }catch(e){ return []; } }
-function saveOrders(orders){ localStorage.setItem(ORDERS_KEY, JSON.stringify(orders)); }
+let ordersCache = null;
+function getOrders(){
+  if(ordersCache) return ordersCache;
+  try{
+    const raw = localStorage.getItem(ORDERS_KEY);
+    if(raw){ ordersCache = JSON.parse(raw); return ordersCache; }
+  }catch(e){}
+  ordersCache = [];
+  return ordersCache;
+}
+// تحميل الطلبات من Supabase — عمداً ما تُستدعى تلقائياً لكل زائر، بس عند فتح
+// لوحة التحكم أو "تتبع طلبي" أو "حسابي"، حتى ما نجيب كل طلبات كل العملاء لكل زائر عادي
+async function loadOrdersFromSupabase(){
+  const { data, error } = await sb.from('orders').select('*').order('date', {ascending:false});
+  if(error){ console.error('تعذّر تحميل الطلبات من Supabase:', error.message); showToast('تعذّر الاتصال بقاعدة البيانات', 'error'); return; }
+  ordersCache = (data||[]).map(o => ({
+    ref:o.ref, paymentId:o.payment_id, date:o.date, userEmail:o.user_email,
+    customer:o.customer, items:o.items, subtotal:Number(o.subtotal),
+    discount:Number(o.discount||0), couponCode:o.coupon_code, total:Number(o.total), status:o.status
+  }));
+  localStorage.setItem(ORDERS_KEY, JSON.stringify(ordersCache));
+}
+async function saveOrders(list){
+  ordersCache = list;
+  localStorage.setItem(ORDERS_KEY, JSON.stringify(list));
+  if(!list.length) return;
+  const rows = list.map(o => ({
+    ref:o.ref, payment_id:o.paymentId, date:o.date, user_email:o.userEmail,
+    customer:o.customer, items:o.items, subtotal:o.subtotal,
+    discount:o.discount, coupon_code:o.couponCode, total:o.total, status:o.status
+  }));
+  const { error } = await sb.from('orders').upsert(rows);
+  if(error){ console.error('تعذّر حفظ الطلبات في Supabase:', error.message); showToast('تعذّر حفظ الطلب بقاعدة البيانات — تحقق من اتصالك', 'error'); }
+}
+async function clearOrdersRemote(){
+  const { error } = await sb.from('orders').delete().neq('ref', '');
+  if(error) console.error('تعذّر مسح الطلبات من Supabase:', error.message);
+}
 function buildOrderFromCart(ref, paymentId){
   const items = Object.keys(cart).map(key=>{
     const entry = cart[key];
@@ -2554,7 +2659,8 @@ document.getElementById('adminSearch').addEventListener('input', e=>{
   adminSearchTerm = e.target.value.trim().toLowerCase(); renderAdminOrders();
 });
 document.getElementById('adminClearBtn').addEventListener('click', ()=>{
-  if(confirm('متأكد إنك تبي تمسح كل الطلبات المخزّنة محلياً؟ هذا الإجراء لا يمكن التراجع عنه.')){
+  if(confirm('متأكد إنك تبي تمسح كل الطلبات نهائياً من قاعدة البيانات؟ هذا الإجراء لا يمكن التراجع عنه.')){
+    clearOrdersRemote();
     saveOrders([]); renderAdminOrders();
   }
 });
@@ -2576,10 +2682,13 @@ document.getElementById('adminExportBtn').addEventListener('click', ()=>{
   showToast('تم تصدير الطلبات بنجاح ✓', 'success');
 });
 
-function openAdmin(){
+async function openAdmin(){
   adminScreen.classList.add('show');
   document.getElementById('adminVisitsCount').textContent = getVisitCount();
   renderAdminOrders();
+  await loadOrdersFromSupabase();
+  renderAdminOrders();
+  loadSuggestionsFromSupabase().then(renderSuggestionsAdmin);
 }
 
 function renderAdminOrders(){
@@ -2797,6 +2906,7 @@ function wireReviewCard(id){
   card.querySelector('.pe-delete').addEventListener('click', ()=>{
     const target = getReviews().find(r=>r.id===id);
     if(!target || !confirm('متأكد إنك تبي تحذف تقييم "' + target.name + '"؟')) return;
+    deleteReviewRemote(id);
     saveReviews(getReviews().filter(r=>r.id!==id)); renderReviewsAdmin(); renderReviews();
   });
   card.querySelector('.pe-save').addEventListener('click', ()=>{
@@ -2820,6 +2930,7 @@ document.getElementById('adminAddReviewBtn').addEventListener('click', ()=>{
 });
 document.getElementById('adminResetReviewsBtn').addEventListener('click', ()=>{
   if(!confirm('هذا راح يرجع التقييمات للإعدادات الافتراضية. متأكد؟')) return;
+  clearReviewsRemote();
   saveReviews(DEFAULT_REVIEWS); renderReviewsAdmin(); renderReviews();
 });
 
@@ -2859,6 +2970,7 @@ function wireCouponCard(id){
   card.querySelector('.pe-delete').addEventListener('click', ()=>{
     const target = getCoupons().find(c=>c.id===id);
     if(!target || !confirm('متأكد إنك تبي تحذف كوبون "' + target.code + '"؟')) return;
+    deleteCouponRemote(id);
     saveCoupons(getCoupons().filter(c=>c.id!==id)); renderCouponsAdmin();
   });
   card.querySelector('.pe-save').addEventListener('click', ()=>{
@@ -2881,6 +2993,7 @@ document.getElementById('adminAddCouponBtn').addEventListener('click', ()=>{
 });
 document.getElementById('adminResetCouponsBtn').addEventListener('click', ()=>{
   if(!confirm('هذا راح يرجع الكوبونات للإعدادات الافتراضية. متأكد؟')) return;
+  clearCouponsRemote();
   saveCoupons(DEFAULT_COUPONS); renderCouponsAdmin();
 });
 
@@ -3039,8 +3152,32 @@ document.getElementById('adminResetMyPlaysBtn').addEventListener('click', ()=>{
 
 /* ===== الاقتراحات ===== */
 const SUGGESTIONS_KEY = 'delivr_suggestions_v1';
-function getSuggestions(){ try{ return JSON.parse(localStorage.getItem(SUGGESTIONS_KEY)) || []; }catch(e){ return []; } }
-function saveSuggestions(list){ localStorage.setItem(SUGGESTIONS_KEY, JSON.stringify(list)); }
+let suggestionsCache = null;
+function getSuggestions(){
+  if(suggestionsCache) return suggestionsCache;
+  try{ const raw = localStorage.getItem(SUGGESTIONS_KEY); if(raw){ suggestionsCache = JSON.parse(raw); return suggestionsCache; } }catch(e){}
+  suggestionsCache = [];
+  return suggestionsCache;
+}
+// تحميل الاقتراحات من Supabase — تُستدعى فقط عند فتح لوحة التحكم (محتوى خاص بالأدمن)
+async function loadSuggestionsFromSupabase(){
+  const { data, error } = await sb.from('suggestions').select('*').order('id', {ascending:false});
+  if(error){ console.error('تعذّر تحميل الاقتراحات من Supabase:', error.message); return; }
+  suggestionsCache = (data||[]).map(s => ({ id:s.id, text:s.text, date:s.date, from:s.from_who }));
+  localStorage.setItem(SUGGESTIONS_KEY, JSON.stringify(suggestionsCache));
+}
+function saveSuggestions(list){
+  suggestionsCache = list;
+  localStorage.setItem(SUGGESTIONS_KEY, JSON.stringify(list));
+}
+async function addSuggestionRemote(s){
+  const { error } = await sb.from('suggestions').insert({ id:s.id, text:s.text, date:s.date, from_who:s.from });
+  if(error) console.error('تعذّر حفظ الاقتراح في Supabase:', error.message);
+}
+async function clearSuggestionsRemote(){
+  const { error } = await sb.from('suggestions').delete().neq('id', -1);
+  if(error) console.error('تعذّر مسح الاقتراحات من Supabase:', error.message);
+}
 function renderSuggestionsAdmin(){
   const suggestions = getSuggestions();
   const list = document.getElementById('suggestionsAdminList');
@@ -3053,6 +3190,7 @@ function renderSuggestionsAdmin(){
 }
 document.getElementById('adminClearSuggestionsBtn').addEventListener('click', ()=>{
   if(!confirm('متأكد إنك تبي تمسح كل الاقتراحات؟')) return;
+  clearSuggestionsRemote();
   saveSuggestions([]); renderSuggestionsAdmin();
 });
 
@@ -3099,11 +3237,13 @@ topBtn.addEventListener('click', ()=> window.scrollTo({top:0, behavior:'smooth'}
 
 /* ===== تتبع الطلب ===== */
 const trackOverlay = document.getElementById('trackOverlay');
-function openTrack(){
+async function openTrack(){
   document.getElementById('trackRefInput').value = currentUser && currentUser.phone ? currentUser.phone : '';
-  document.getElementById('trackResult').innerHTML = '';
+  document.getElementById('trackResult').innerHTML = '<div class="track-empty">جارِ التحميل...</div>';
   trackOverlay.classList.add('show');
+  await loadOrdersFromSupabase();
   if(currentUser) renderTrackResults(myOrders());
+  else document.getElementById('trackResult').innerHTML = '';
 }
 document.getElementById('trackOrderBtn').addEventListener('click', openTrack);
 document.getElementById('trackCloseBtn').addEventListener('click', ()=> trackOverlay.classList.remove('show'));
@@ -3111,7 +3251,7 @@ trackOverlay.addEventListener('click', e=>{ if(e.target===trackOverlay) trackOve
 function renderTrackResults(matches){
   const resultEl = document.getElementById('trackResult');
   if(matches.length===0){
-    resultEl.innerHTML = `<div class="track-empty">ما لقينا طلب مطابق على هذا المتصفح.</div>`;
+    resultEl.innerHTML = `<div class="track-empty">ما لقينا طلب مطابق.</div>`;
     return;
   }
   resultEl.innerHTML = matches.map(o=>`
@@ -3126,9 +3266,11 @@ function renderTrackResults(matches){
       <div class="order-total-row"><span>الإجمالي</span><span>${o.total} ر.س</span></div>
     </div>`).join('');
 }
-document.getElementById('trackSearchBtn').addEventListener('click', ()=>{
+document.getElementById('trackSearchBtn').addEventListener('click', async ()=>{
   const q = document.getElementById('trackRefInput').value.trim().toLowerCase();
   if(!q){ document.getElementById('trackResult').innerHTML = `<div class="track-empty">أدخل رقم الطلب أو رقم الجوال أولاً.</div>`; return; }
+  document.getElementById('trackResult').innerHTML = '<div class="track-empty">جارِ البحث...</div>';
+  await loadOrdersFromSupabase();
   renderTrackResults(getOrders().filter(o =>
     o.ref.toLowerCase().includes(q) || o.customer.phone.replace(/\s/g,'').includes(q.replace(/\s/g,''))));
 });
@@ -3178,6 +3320,8 @@ loadProductsFromSupabase().then(()=>{
   renderFilters();
   renderGrid();
 });
+loadReviewsFromSupabase().then(renderReviews);
+loadCouponsFromSupabase();
 </script>
 </body>
 </html>
